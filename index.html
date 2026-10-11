@@ -1,0 +1,1124 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Börsen-Fit Lernportal</title>
+<style>
+:root{
+  --bg:#f5f3ee; --card:#ffffff; --ink:#18212b; --muted:#5d6874; --line:#e3dfd5;
+  --red:#d6261d; --red-d:#a91a13; --red-s:#fdebea;
+  --yel:#ffc21a; --yel-s:#fff5d6;
+  --grn:#0e8a52; --grn-s:#e2f4ea;
+  --blu:#1769b0; --blu-s:#e6f0fa;
+  --r:14px; --sh:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06);
+  --serif: Georgia,"Iowan Old Style","Times New Roman",serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:normal;line-height:1.15;margin:0 0 .5em}
+h1{font-size:clamp(28px,4vw,40px)}
+h2{font-size:24px;margin-top:4px}
+h3{font-size:19px}
+h4{margin:.2em 0 .5em;font-size:15px}
+p{margin:.4em 0 .8em}
+a{color:var(--blu)}
+small,.small{font-size:13.5px;color:var(--muted)}
+b,strong{font-weight:650}
+
+/* Top bar */
+.top{position:sticky;top:0;z-index:50;background:var(--ink);color:#fff;display:flex;align-items:center;gap:18px;padding:10px 20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--red);display:grid;place-items:center}
+.logo svg{width:20px;height:20px}
+.hud{flex:1;display:flex;align-items:center;gap:14px;justify-content:flex-end}
+.pbar{flex:1;max-width:340px;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--yel),#ffde7a);transition:width .5s}
+.ptxt{font-size:13px;opacity:.85;white-space:nowrap}
+.score{background:rgba(255,255,255,.12);padding:5px 12px;border-radius:99px;font-weight:700;font-size:14px;white-space:nowrap}
+.menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 10px;font-size:14px}
+
+/* Layout */
+.wrap{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding:24px 20px 60px}
+.side{position:sticky;top:76px;align-self:start}
+.side ol{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.side button{width:100%;text-align:left;display:flex;align-items:center;gap:10px;background:none;border:0;border-radius:10px;padding:9px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.side button:hover{background:#ebe7de}
+.side button.active{background:var(--card);box-shadow:var(--sh);font-weight:650}
+.side .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:#e4e0d6;color:var(--muted);flex:none}
+.side button.done .n{background:var(--grn);color:#fff}
+.side button.active .n{background:var(--red);color:#fff}
+.side .lbl{display:flex;flex-direction:column;line-height:1.2}
+.side .lbl small{font-size:11.5px}
+.side-note{margin-top:16px;font-size:12.5px;color:var(--muted);padding:0 10px}
+
+.page{display:none;animation:fade .35s ease}
+.page.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.mod-head{margin-bottom:18px}
+.mod-num{display:inline-block;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.lead{font-size:18px;color:var(--muted);max-width:720px}
+
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:22px 24px;margin:0 0 18px}
+.card.tint-y{background:var(--yel-s);box-shadow:none;border:1px solid #f3e1a3}
+.card.tint-g{background:var(--grn-s);box-shadow:none;border:1px solid #bfe3cf}
+.card.tint-b{background:var(--blu-s);box-shadow:none;border:1px solid #c5dbf0}
+.card.tint-r{background:var(--red-s);box-shadow:none;border:1px solid #f5c9c5}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.grid2>.card,.grid3>.card,.grid4>.card{margin:0}
+.mb{margin-bottom:18px}
+ul.clean{padding-left:20px;margin:.3em 0}
+ul.clean li{margin:.25em 0}
+
+.hero{background:var(--ink);color:#fff;border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;margin-bottom:20px}
+.hero h1{font-size:clamp(32px,5vw,52px);max-width:640px}
+.hero p{color:#cfd6de;font-size:18px;max-width:600px}
+.hero .deco{position:absolute;right:-30px;bottom:-30px;width:300px;opacity:.9}
+.kpi{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh)}
+.kpi b{display:block;font-size:24px;font-family:var(--serif);font-weight:normal}
+.kpi span{font-size:13px;color:var(--muted)}
+
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f2efe8;border-radius:10px;padding:12px 14px;font-size:14.5px;overflow-x:auto}
+.tip{border-left:4px solid var(--yel);background:var(--yel-s);padding:12px 16px;border-radius:0 10px 10px 0;margin:12px 0}
+.warnbox{border-left:4px solid var(--red);background:var(--red-s);padding:12px 16px;border-radius:0 10px 10px 0;margin:12px 0}
+.okbox{border-left:4px solid var(--grn);background:var(--grn-s);padding:12px 16px;border-radius:0 10px 10px 0;margin:12px 0}
+
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:650;border-bottom:2px solid var(--line);padding:8px 8px}
+.tbl td{border-bottom:1px solid var(--line);padding:8px 8px;vertical-align:middle}
+.tbl td.r,.tbl th.r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+
+.btn{font:inherit;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:600;transition:transform .1s,background .2s}
+.btn:hover{background:#f3f0e9}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{background:var(--red-d)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.ghost{background:none}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+
+/* Tasks */
+.task{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px;margin:0 0 18px;border:2px solid transparent;transition:border-color .3s}
+.task.solved{border-color:#bfe3cf}
+.task-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.tag{font-size:11.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blu);background:var(--blu-s);padding:3px 9px;border-radius:99px}
+.task.solved .tag{color:var(--grn);background:var(--grn-s)}
+.pts{font-size:12.5px;font-weight:700;color:var(--muted)}
+.q{font-weight:600;font-size:16.5px}
+.opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;background:#faf9f6;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all .15s}
+.opt:hover:not(:disabled){border-color:var(--blu);background:#fff}
+.opt.ok{background:var(--grn-s);border-color:var(--grn);color:#0a5a36;font-weight:600}
+.opt.bad{background:var(--red-s);border-color:#efb3ae;color:#8d1b14;text-decoration:line-through}
+.opt:disabled{cursor:default}
+.fb{display:none;margin-top:12px;padding:11px 14px;border-radius:10px;font-size:15px}
+.fb.show{display:block;animation:fade .3s}
+.fb.good{background:var(--grn-s);color:#0a4d2f}
+.fb.warn{background:var(--yel-s);color:#6a4c00}
+.fb.info{background:var(--blu-s);color:#0f3f6a}
+.fb.bad{background:var(--red-s);color:#7d1610}
+.nf{display:flex;flex-wrap:wrap;gap:12px}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--muted);min-width:180px;flex:1}
+.inp{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.inp input{border:0;font:inherit;font-size:16px;padding:9px 12px;width:100%;min-width:0;outline:none;color:var(--ink);background:transparent}
+.inp em{font-style:normal;padding:0 12px;color:var(--muted)}
+.inp:focus-within{border-color:var(--blu)}
+.inp:has(input.ok){border-color:var(--grn);background:var(--grn-s)}
+.inp:has(input.bad){border-color:var(--red);background:var(--red-s)}
+input.plain,select.plain{font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink);width:100%}
+.mrow{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow select.ok{border-color:var(--grn);background:var(--grn-s)}
+.mrow select.bad{border-color:var(--red);background:var(--red-s)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* Scenario */
+.scen{background:#faf9f6;border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0 14px}
+.scen-h{font-weight:700;margin-bottom:4px}
+.ticks{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:10px}
+.tick{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center;transition:all .25s;position:relative}
+.tick small{display:block;font-size:11px}
+.tick b{font-variant-numeric:tabular-nums}
+.tick .st{display:block;font-size:11px;font-weight:700;margin-top:3px;min-height:15px}
+.tick.cur{border-color:var(--blu);transform:translateY(-3px);box-shadow:0 4px 12px rgba(23,105,176,.2)}
+.tick.trig{border-color:var(--yel);background:var(--yel-s)}
+.tick.exec{border-color:var(--grn);background:var(--grn-s)}
+.tick.exec .st{color:var(--grn)}
+.tick.trig .st{color:#8a6100}
+.lvl{display:inline-block;background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px}
+
+/* Order book */
+.ob{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.obp{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip-btn{font:inherit;border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;cursor:pointer;font-weight:600;font-variant-numeric:tabular-nums}
+.chip-btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.barv{height:10px;border-radius:5px;background:var(--blu);display:inline-block;vertical-align:middle;transition:width .4s}
+.barv.best{background:var(--grn)}
+
+/* Badges */
+.nh{display:inline-block;width:14px;height:14px;border-radius:50%;background:conic-gradient(#1a9bd7 0 50%,#7ab929 50% 100%);vertical-align:-2px;margin-left:5px;flex:none}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:#eee;color:var(--muted)}
+.pill.g{background:var(--grn-s);color:var(--grn)}
+.pill.r{background:var(--red-s);color:var(--red)}
+.pill.y{background:var(--yel-s);color:#8a6100}
+.pill.b{background:var(--blu-s);color:var(--blu)}
+.pos{color:var(--grn)} .neg{color:var(--red)}
+
+/* Mini purchase */
+.pick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pick label{border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:#fff;display:block}
+.pick input{display:none}
+.pick label:has(input:checked){border-color:var(--red);box-shadow:0 0 0 3px var(--red-s)}
+.pick b{display:block}
+.receipt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;background:#fffdf6;border:1px dashed #d8cfb5;border-radius:10px;padding:14px 16px;margin-top:12px}
+.receipt .ln{display:flex;justify-content:space-between;gap:10px}
+.receipt .tot{border-top:1px solid #d8cfb5;margin-top:6px;padding-top:6px;font-weight:700}
+
+/* Simulator */
+.sim-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.sim-kpis .kpi{padding:12px 14px}
+.sim-kpis .kpi b{font-size:19px}
+.sim-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px}
+.sim-grid .card{margin-bottom:16px;padding:18px 18px}
+.oform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.oform label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.seg{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-size:14px;font-weight:600;border:0;background:#fff;padding:8px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--ink);color:#fff}
+.seg button.on.buy{background:var(--grn)}
+.seg button.on.sell{background:var(--red)}
+.preview{background:#faf9f6;border-radius:10px;padding:10px 12px;font-size:14px;margin-top:10px}
+.preview .ln{display:flex;justify-content:space-between}
+.log{max-height:260px;overflow:auto;font-size:13.5px}
+.log div{padding:6px 0;border-bottom:1px solid var(--line)}
+.log .d{font-weight:700;color:var(--muted);margin-right:6px}
+.msg{margin-top:10px}
+.missions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mis{border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;background:#fff}
+.mis b{display:block;font-size:14.5px}
+.mis.done{border:1.5px solid var(--grn);background:var(--grn-s)}
+.mis.done b::before{content:"✓ ";color:var(--grn)}
+.evcal{display:flex;gap:8px;flex-wrap:wrap}
+.evcal span{font-size:12.5px;background:var(--yel-s);border:1px solid #f0dc9c;border-radius:8px;padding:4px 8px}
+.evcal span.past{opacity:.45;text-decoration:line-through}
+
+/* Timeline */
+.tl{list-style:none;padding:0;margin:0;position:relative}
+.tl li{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:8px 0;position:relative}
+.tl li b{font-variant-numeric:tabular-nums}
+
+/* Eval */
+.ev-hero{background:linear-gradient(135deg,var(--ink),#2b3a4a);color:#fff;border-radius:20px;padding:34px;text-align:center;position:relative;overflow:hidden}
+.ring{width:150px;height:150px;border-radius:50%;margin:10px auto 14px;display:grid;place-items:center;background:conic-gradient(var(--yel) calc(var(--p)*1%),rgba(255,255,255,.15) 0)}
+.ring div{width:118px;height:118px;border-radius:50%;background:#223140;display:grid;place-items:center;font-family:var(--serif);font-size:34px}
+.ev-hero h2{font-size:30px;margin:0}
+.ev-hero p{color:#cfd6de;max-width:560px;margin:8px auto 0}
+.mbar{display:grid;grid-template-columns:170px 1fr 60px;gap:12px;align-items:center;padding:7px 0}
+.mbar .track{height:10px;background:#ece8df;border-radius:99px;overflow:hidden}
+.mbar .track i{display:block;height:100%;border-radius:99px;background:var(--grn);transition:width .8s}
+.mbar .track i.mid{background:var(--yel)} .mbar .track i.low{background:var(--red)}
+.comp{display:flex;gap:10px;align-items:flex-start;padding:7px 0}
+.comp .ic{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;background:var(--grn)}
+.comp.no .ic{background:#c9c3b6}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:10px;padding:8px 0}
+.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.cert{border:3px double #b99a3a;border-radius:16px;background:#fffdf5;padding:34px;text-align:center;margin-top:12px}
+.cert h2{font-size:34px;margin:6px 0}
+.cert .nm{font-family:var(--serif);font-size:30px;border-bottom:1px solid #cdbb85;display:inline-block;min-width:260px;padding:4px 20px;margin:10px 0}
+.confetti{position:fixed;top:-12px;width:9px;height:14px;z-index:100;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;z-index:90;transition:transform .3s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{max-width:1240px;margin:0 auto;padding:0 20px 40px;font-size:12.5px;color:var(--muted)}
+
+@media (max-width:980px){
+  .sim-grid{grid-template-columns:1fr}
+  .sim-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .missions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;padding:16px 16px 50px}
+  .side{position:fixed;top:56px;left:0;right:0;bottom:0;background:var(--bg);z-index:40;padding:16px;overflow:auto;display:none}
+  .side.open{display:block}
+  .menu-btn{display:block}
+  .pbar,.ptxt{display:none}
+  .grid2,.grid3,.grid4,.ob,.pick{grid-template-columns:1fr}
+  .hero{padding:28px 22px}
+  .hero .deco{width:180px;opacity:.35}
+  .card,.task{padding:18px 16px}
+  .mrow{grid-template-columns:1fr}
+  .oform{grid-template-columns:1fr}
+  .mbar{grid-template-columns:110px 1fr 46px}
+  .tl li{grid-template-columns:96px 1fr}
+}
+@media (max-width:520px){
+  .sim-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .missions{grid-template-columns:1fr}
+  .brand span{display:none}
+}
+@media print{
+  body *{visibility:hidden}
+  #cert,#cert *{visibility:visible}
+  #cert{position:absolute;left:0;top:0;width:100%;margin:0}
+  .top{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></div>
+    <span>Börsen-Fit</span>
+  </div>
+  <div class="hud">
+    <div class="pbar"><i id="pfill"></i></div>
+    <span class="ptxt" id="ptxt">0 % geschafft</span>
+    <span class="score" id="score">0 P</span>
+    <button class="menu-btn" id="menuBtn">☰ Kapitel</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="side" id="side"><ol id="nav"></ol>
+    <div class="side-note">Dein Fortschritt wird in diesem Browser gespeichert. <button class="btn sm ghost" id="resetAll" style="margin-top:6px">Alles zurücksetzen</button></div>
+  </nav>
+
+  <main id="main">
+
+<!-- ============ START ============ -->
+<section class="page" id="pg-start">
+  <div class="hero">
+    <svg class="deco" viewBox="0 0 300 220" fill="none"><rect x="20" y="40" width="250" height="160" rx="16" fill="#26333f"/><polyline points="40 170 90 120 130 145 190 80 250 60" stroke="#ffc21a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="40 180 100 160 150 170 210 130 250 140" stroke="#d6261d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/><circle cx="250" cy="60" r="10" fill="#ffc21a"/></svg>
+    <span class="mod-num" style="color:var(--yel)">Lernportal zum Planspiel Börse</span>
+    <h1>Mach dich fit für dein erstes Depot.</h1>
+    <p>In 7 kurzen Modulen lernst du Schritt für Schritt, wie der Wertpapierhandel im Planspiel Börse funktioniert – vom ersten Kauf über Limit- und Stop-Orders bis zur Wertung. Danach probierst du alles im Übungsdepot aus.</p>
+    <div class="row"><button class="btn primary" onclick="go('m1')">Los geht's →</button><button class="btn" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" onclick="go('px')">Direkt zum Übungsdepot</button></div>
+  </div>
+
+  <div class="grid4 mb">
+    <div class="kpi"><b>50.000 €</b><span>virtuelles Startkapital pro Depot</span></div>
+    <div class="kpi"><b>2 Depots</b><span>Wettbewerbs- und Trainingsdepot</span></div>
+    <div class="kpi"><b>2 Wertungen</b><span>Depotgesamtwert & Nachhaltigkeit</span></div>
+    <div class="kpi"><b>2–4</b><span>Personen pro Schülerteam</span></div>
+  </div>
+
+  <div class="grid2 mb">
+    <div class="card">
+      <h3>So funktioniert das Portal</h3>
+      <ul class="clean">
+        <li><b>Lesen:</b> Jedes Modul erklärt ein Thema kurz und verständlich.</li>
+        <li><b>Üben:</b> Danach kommen Aufgaben – Quizfragen, Rechenaufgaben, Order-Simulationen.</li>
+        <li><b>Punkte:</b> Beim ersten Versuch gibt es die volle Punktzahl, danach die Hälfte.</li>
+        <li><b>Praxis:</b> Im Übungsdepot handelst du mit fiktiven Wertpapieren nach den echten Spielregeln.</li>
+        <li><b>Auswertung:</b> Am Ende siehst du, was du gelernt hast – inklusive Urkunde.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Das Ziel im Spiel</h3>
+      <p>Ihr vermehrt euer Startkapital durch geschickte Anlage und Umschichtungen. Zusätzlich könnt ihr eine Nachhaltigkeitsstrategie entwickeln, indem ihr in nachhaltige Aktien und Fonds investiert.</p>
+      <p>Gewertet wird nur das <b>Wettbewerbsdepot</b>. Das <b>Trainingsdepot</b> ist zum Ausprobieren da – dort kannst du zusätzlich mit Kryptowährungen und Zertifikaten handeln.</p>
+    </div>
+  </div>
+
+  <div class="card tint-y">
+    <b>Hinweis zu Terminen:</b> Alle Daten und Regeln in diesem Portal stammen aus der offiziellen Spielanleitung „Planspiel Börse 2025“ (Spielrunde 2025/26). Für eine neue Spielrunde können sich Termine und Details ändern – maßgeblich sind immer die aktuellen Regeln in der Planspiel-Börse-App und auf planspiel-boerse.de.
+  </div>
+</section>
+
+<!-- ============ M1 ============ -->
+<section class="page" id="pg-m1">
+  <div class="mod-head"><span class="mod-num">Modul 1</span><h1>Börse & Kurse</h1><p class="lead">Bevor du kaufst: Was ist die Börse eigentlich, und wie entsteht der Preis einer Aktie?</p></div>
+
+  <div class="card">
+    <h2>Die Börse – ein großer Wochenmarkt?</h2>
+    <p>Der Vergleich passt ganz gut, hat aber Grenzen:</p>
+    <div class="grid2">
+      <ul class="clean">
+        <li>Früher waren Börsen echte Orte mit Händlern. Heute läuft der Handel fast komplett elektronisch (z.&nbsp;B. über Xetra).</li>
+        <li>Auf dem Wochenmarkt steht der Preis schon fest. An der Börse wird der Preis erst <b>ermittelt</b> – das ist ihre Hauptaufgabe.</li>
+      </ul>
+      <ul class="clean">
+        <li>Gehandelt werden Vermögenswerte: Aktien und andere Wertpapiere, Rohstoffe, Devisen, Energie u.&nbsp;a.</li>
+        <li>Käufer und Verkäufer treffen sich selten direkt – meist handeln Banken und Sparkassen für sie.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Was ist eine Aktie?</h2>
+    <p>Mit einer Aktie kaufst du einen kleinen Anteil an einem Unternehmen, einer <b>Aktiengesellschaft (AG)</b>. Du wirst Miteigentümer:in. Geht es dem Unternehmen gut, kannst du verdienen – über eine <b>Dividende</b> (Gewinnausschüttung) oder über einen <b>steigenden Kurs</b>. Hat es Probleme, kannst du Geld verlieren – im schlimmsten Fall alles.</p>
+  </div>
+
+  <div class="card">
+    <h2>Wie entsteht ein Aktienkurs?</h2>
+    <p>Käufer:innen melden, wie viele Aktien sie <b>höchstens</b> zu welchem Preis kaufen wollen. Verkäufer:innen melden, wie viele sie <b>mindestens</b> zu welchem Preis verkaufen wollen. Die Börse sucht dann den Kurs, bei dem <b>die meisten Aktien gehandelt werden</b> (größter Umsatz). Danach wird sofort der nächste Kurs berechnet – deshalb ändert sich der Kurs im Lauf des Tages ständig.</p>
+    <p class="small">Probier es aus: Hier ist ein vereinfachtes Orderbuch. Klicke die möglichen Kurse an und vergleiche den Umsatz.</p>
+    <div id="orderbook"></div>
+  </div>
+  <div id="t-m1-ob"></div>
+
+  <div class="card">
+    <h2>Geldkurs und Briefkurs</h2>
+    <p>Im Spiel siehst du für jedes Wertpapier zwei Kurse. Alle Aufträge werden mit diesen aktuellen Kursen der Börse abgerechnet:</p>
+    <div class="grid2">
+      <div class="card tint-g" style="margin:0"><h3>Briefkurs (Ask)</h3><p>Der Preis, zu dem dir jemand Wertpapiere <b>anbietet</b>. <b>Wenn du kaufst</b>, zahlst du den Briefkurs.</p></div>
+      <div class="card tint-r" style="margin:0"><h3>Geldkurs (Bid)</h3><p>Der Preis, den jemand für Wertpapiere <b>zahlen will</b>. <b>Wenn du verkaufst</b>, bekommst du den Geldkurs.</p></div>
+    </div>
+    <div class="tip"><b>Merke:</b> Der Briefkurs ist fast immer etwas höher als der Geldkurs. Die Differenz heißt <b>Spread</b>. Wer kauft und sofort wieder verkauft, macht also schon dadurch einen kleinen Verlust.</div>
+  </div>
+  <div id="t-m1-bidask"></div>
+  <div id="t-m1-spread"></div>
+
+  <div class="card">
+    <h2>Bulle und Bär</h2>
+    <p>Die zwei Symbole der Börse: Der <b>Bulle</b> stößt seine Hörner von unten nach oben – er steht für <b>steigende Kurse</b> (Bullenmarkt). Der <b>Bär</b> schlägt mit der Tatze von oben nach unten – er steht für <b>fallende Kurse</b> (Bärenmarkt).</p>
+  </div>
+  <div id="t-m1-bull"></div>
+
+  <div class="card">
+    <h2>Wo wird im Spiel gehandelt?</h2>
+    <p>Die Wertpapiere im Planspiel sind an der <b>Börse Stuttgart</b>, der <b>Wiener Börse</b> oder der <b>Börse Luxemburg</b> notiert. Börsentage sind die Handelstage dieser Börsenplätze. Du kannst Aufträge auch außerhalb der Handelszeiten erteilen – sie werden ausgeführt, sobald der Börsenplatz öffnet.</p>
+    <p class="small">Zur Orientierung dienen Indizes wie DAX 40, MDAX, SDAX, TecDAX, EuroSTOXX 50, Dow Jones oder Nasdaq 100 – sie zeigen, wie sich eine festgelegte Gruppe von Aktien entwickelt.</p>
+  </div>
+  <div id="t-m1-place"></div>
+</section>
+
+<!-- ============ M2 ============ -->
+<section class="page" id="pg-m2">
+  <div class="mod-head"><span class="mod-num">Modul 2</span><h1>Dein erster Kauf</h1><p class="lead">Wir starten ganz einfach: ein Wertpapier, eine Stückzahl, ein Auftrag. Und dann schauen wir uns genau an, was du bezahlst.</p></div>
+
+  <div class="card">
+    <h2>In 4 Schritten zum ersten Wertpapier</h2>
+    <ol class="steps">
+      <li><div><b>Wertpapier suchen.</b> In der App oder Webversion hilft dir eine Suchfunktion. Nachhaltige Wertpapiere erkennst du am blau-grünen Symbol <span class="nh"></span>.</div></li>
+      <li><div><b>Stückzahl eingeben.</b> Bei Aktien, Fonds und ETFs gibst du die Anzahl der Stücke an. (Bei Anleihen den Nennwert in Euro – dazu mehr in Modul 5.)</div></li>
+      <li><div><b>Ordertyp wählen.</b> Für den Anfang: <b>„billigst“</b> – das heißt, du kaufst ohne Preisgrenze zum aktuellen Briefkurs.</div></li>
+      <li><div><b>Auftrag abschicken.</b> Aufträge sind verbindlich! Danach bekommst du eine Abrechnung im Depot.</div></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Was kostet mein Kauf?</h2>
+    <p>Wie bei einer echten Bank fallen im Spiel <b>Gebühren</b> an. Für Aktien, Fonds, ETFs und Anleihen gilt: <b>0,3 % vom Kurswert, mindestens 15 €</b>.</p>
+    <div class="formula">Kurswert&nbsp;&nbsp;&nbsp;= Stückzahl × Briefkurs<br>Gebühr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0,3 % vom Kurswert (mindestens 15,00 €)<br>Gesamtpreis = Kurswert + Gebühr</div>
+    <div class="okbox"><b>Beispiel:</b> 100 Aktien zu einem Briefkurs von 80,00 €<br>Kurswert = 100 × 80,00 € = 8.000,00 € · Gebühr = 0,3 % = 24,00 € · <b>Gesamt = 8.024,00 €</b></div>
+    <div class="tip"><b>Wichtig zur Mindestgebühr:</b> 0,3 % von 5.000 € sind genau 15 €. Bei jedem Kauf unter 5.000 € Kurswert zahlst du deshalb trotzdem 15 €. Kleine Aufträge sind also verhältnismäßig teuer!</div>
+  </div>
+  <div id="t-m2-c1"></div>
+  <div id="t-m2-c2"></div>
+  <div id="t-m2-small"></div>
+
+  <div class="card">
+    <h2>Jetzt du: Dein erster Kaufauftrag</h2>
+    <p>Du hast 50.000 € Startkapital. Wähle ein Wertpapier, gib eine Stückzahl ein und schicke einen Kaufauftrag „billigst“ ab. Die Abrechnung siehst du sofort.</p>
+    <div id="mini"></div>
+  </div>
+
+  <div class="card">
+    <h2>Und der Verkauf?</h2>
+    <p>Der Verkauf läuft genauso – nur umgekehrt: Du verkaufst zum <b>Geldkurs</b>, und die Gebühr wird von deinem Erlös <b>abgezogen</b>.</p>
+    <div class="formula">Verkaufserlös = Stückzahl × Geldkurs − Gebühr</div>
+  </div>
+  <div id="t-m2-sell"></div>
+</section>
+
+<!-- ============ M3 ============ -->
+<section class="page" id="pg-m3">
+  <div class="mod-head"><span class="mod-num">Modul 3</span><h1>Ordertypen</h1><p class="lead">„Billigst“ ist einfach – aber du hast keine Kontrolle über den Preis. Mit Limit- und Stop-Orders bestimmst du selbst, wann gehandelt wird.</p></div>
+
+  <div class="card">
+    <h2>Die Ordertypen im Überblick</h2>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Ordertyp</th><th>Was passiert?</th><th>Wofür?</th></tr>
+      <tr><td><b>Billigst</b> (Kauf)<br><b>Bestens</b> (Verkauf)</td><td>Ohne Preisgrenze. Sofort zum aktuellen Brief- bzw. Geldkurs.</td><td>Schnell rein oder raus.</td></tr>
+      <tr><td><b>Limit-Kauf</b></td><td>Wird nur ausgeführt, wenn der Briefkurs das Limit <b>erreicht oder unterschreitet</b>.</td><td>Nicht mehr als X € zahlen.</td></tr>
+      <tr><td><b>Limit-Verkauf</b></td><td>Wird nur ausgeführt, wenn der Geldkurs das Limit <b>erreicht oder überschreitet</b>.</td><td>Mindestens X € bekommen, Gewinn sichern.</td></tr>
+      <tr><td><b>Stop-Loss</b> (Verkauf)</td><td>Fällt der Kurs auf oder unter die Stop-Marke, wird daraus ein Verkauf „bestens“ – abgerechnet zum <b>nächsten Kurs</b>.</td><td>Verluste begrenzen.</td></tr>
+      <tr><td><b>Stop-Buy</b> (Kauf)</td><td>Steigt der Kurs auf oder über die Stop-Marke, wird daraus ein Kauf „billigst“ – abgerechnet zum <b>nächsten Kurs</b>.</td><td>Einsteigen, wenn ein Aufwärtstrend startet.</td></tr>
+    </table></div>
+    <div class="tip"><b>Gültigkeit:</b> Limit- und Stop-Orders gelten für den aktuellen Börsentag – oder du gibst ihnen eine Laufzeit von <b>14 Kalendertagen</b>. Bis dahin bleiben sie als offene Aufträge stehen. Limits und Stops gibst du in Euro und Cent an (bei Anleihen in Prozent).</div>
+  </div>
+
+  <h2>Order-Simulationen</h2>
+  <p>Spiele jede Situation ab und beantworte danach die Frage.</p>
+  <div id="sc-limit"></div>
+  <div id="t-m3-limit"></div>
+  <div id="sc-stoploss"></div>
+  <div id="t-m3-sl"></div>
+  <div class="warnbox"><b>Achtung beim Stop-Loss:</b> Der Stop ist keine Preisgarantie! Er wird zum nächsten Kurs verkauft – und der kann bei einem schnellen Absturz deutlich unter deiner Stop-Marke liegen.</div>
+  <div id="sc-stopbuy"></div>
+  <div id="t-m3-sb"></div>
+
+  <div id="t-m3-match"></div>
+
+  <div class="card">
+    <h2>Aufträge löschen</h2>
+    <p>Du kannst offene Aufträge selbst löschen – das kostet aber <b>2,50 €</b>. Wird eine Limit- oder Stop-Order dagegen wegen eines besonderen Ereignisses (Modul 6) oder wegen ihres Laufzeitendes gestrichen, ist das <b>gebührenfrei</b>.</p>
+  </div>
+  <div id="t-m3-cancel"></div>
+</section>
+
+<!-- ============ M4 ============ -->
+<section class="page" id="pg-m4">
+  <div class="mod-head"><span class="mod-num">Modul 4</span><h1>Die wichtigsten Spielregeln</h1><p class="lead">Diese Regeln musst du kennen – sonst wird dein Auftrag abgelehnt oder dein Team sogar disqualifiziert.</p></div>
+
+  <div class="grid2 mb">
+    <div class="card tint-r"><h3>① Qualifikation</h3><p>Jedes Team braucht <b>mindestens drei abgerechnete Kaufaufträge</b> bis einschließlich <b>25. Januar 2026</b>. Sonst wird das Depot wegen Passivität disqualifiziert. Erst nach drei ausgeführten Aufträgen erscheint ihr in den Ranglisten.</p></div>
+    <div class="card tint-y"><h3>② Die 20-%-Grenze</h3><p>In ein einzelnes Wertpapier dürfen <b>höchstens 20 % des Depotgesamtwerts</b> fließen. Dabei zählen der <b>vorhandene Bestand</b> und <b>offene Kaufaufträge</b> mit. Wird es mehr, kannst du nicht kaufen.</p></div>
+    <div class="card"><h3>③ Alles oder nichts</h3><p>Aufträge werden <b>immer komplett</b> ausgeführt – eine Teilausführung gibt es nicht. Ist bei einem Kurs das Volumen „0“, wird nicht ausgeführt.</p></div>
+    <div class="card"><h3>④ Maximal 5 Orders</h3><p>Du kannst für ein Wertpapier <b>höchstens fünf Orders pro Tag</b> erteilen – auch an mehreren Börsenplätzen.</p></div>
+    <div class="card"><h3>⑤ Penny Stocks</h3><p>Kostet ein Wertpapier <b>unter 1,00 €</b>, wird ein Kaufauftrag zwar angenommen, aber <b>nicht ausgeführt</b>. Verkaufen kannst du es weiterhin.</p></div>
+    <div class="card"><h3>⑥ Kein Überziehen</h3><p>Ein Auftrag wird abgelehnt, wenn dadurch dein Konto ins Minus rutschen würde – oder wenn du mehr verkaufen willst, als du im Depot hast. Das Spielkapital wird nicht verzinst.</p></div>
+  </div>
+  <div id="t-m4-20"></div>
+
+  <h2>Richtig oder falsch?</h2>
+  <div id="t-m4-tf1"></div>
+  <div id="t-m4-tf2"></div>
+  <div id="t-m4-tf3"></div>
+  <div id="t-m4-tf4"></div>
+  <div id="t-m4-tf5"></div>
+
+  <div class="card">
+    <h2>Fair Play bei der Anmeldung</h2>
+    <ul class="clean">
+      <li>Für die Teamregistrierung braucht ihr einen <b>Registrierungscode</b> – von eurer Lehrkraft oder der Sparkasse.</li>
+      <li>Schülerteams bestehen aus <b>2 bis 4</b> Mitgliedern (eine Sparkasse kann auch Einzelteams erlauben).</li>
+      <li>Wer <b>unter 16</b> ist, braucht das Einverständnis eines Erziehungsberechtigten – per Link über E-Mail oder WhatsApp.</li>
+      <li><b>Falsche Angaben</b> (z.&nbsp;B. beim Alter) führen zur Disqualifikation. Gewinnberechtigt ist nur, wer vollständig und korrekt registriert ist.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Termine der Spielrunde 2025/26</h2>
+    <ul class="tl">
+      <li><b>15.09.2025</b><span>Beginn der Registrierung</span></li>
+      <li><b>01.10.2025</b><span>Erster Handelstag</span></li>
+      <li><b>12.11.2025</b><span>Ende der Registrierung</span></li>
+      <li><b>25.01.2026</b><span>Stichtag: mindestens 3 abgerechnete Kaufaufträge</span></li>
+      <li><b>26.01.2026</b><span>Letzter Handelstag – Schlussbewertung aller qualifizierten Depots</span></li>
+      <li><b>31.05.2026</b><span>Ende der Spielrunde, Depotzugänge werden abgeschaltet</span></li>
+    </ul>
+    <p class="small">Termine laut Spielanleitung 2025. Bei einer neuen Spielrunde gelten die aktuellen Termine in der App.</p>
+  </div>
+  <div id="t-m4-date"></div>
+</section>
+
+<!-- ============ M5 ============ -->
+<section class="page" id="pg-m5">
+  <div class="mod-head"><span class="mod-num">Modul 5</span><h1>Wertpapierarten</h1><p class="lead">Nicht nur Aktien: Im Spiel kannst du auch Fonds, ETFs und Anleihen handeln. Jede Art hat eigene Chancen und Risiken.</p></div>
+
+  <div class="grid2 mb">
+    <div class="card"><h3>Aktien</h3><p>Anteile an einem Unternehmen. Du bist Teilhaber:in, hast Stimmrecht auf der Hauptversammlung und kannst eine Dividende bekommen. Das Unternehmen muss das Geld nicht zurückzahlen.</p><span class="pill r">Kann bis zum Totalverlust schwanken</span></div>
+    <div class="card"><h3>Investmentfonds</h3><p>Eine Fondsgesellschaft bündelt viele Wertpapiere in einem Fonds – z.&nbsp;B. Aktienfonds, Rentenfonds oder Mischfonds. Das Fondsmanagement entscheidet, du hast darauf keinen Einfluss.</p><span class="pill r">Kann stark schwanken</span></div>
+    <div class="card"><h3>ETFs</h3><p>„Exchange Traded Funds“ sind börsengehandelte Indexfonds. Sie bilden einen Index möglichst genau nach (z.&nbsp;B. alle Aktien des DAX 40) – passiv und kostengünstig. So streust du dein Risiko über viele Unternehmen.</p><span class="pill y">Risikostreuung</span></div>
+    <div class="card"><h3>Festverzinsliche Wertpapiere (Anleihen)</h3><p>Du leihst einem Staat oder Unternehmen Geld und bekommst einen festen Zins für eine feste Laufzeit. Am Ende gibt's 100 % zurück – wenn der Schuldner zahlen kann. Während der Laufzeit schwankt der Kurs.</p><span class="pill b">Feste Zinsen</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Was kannst du wo handeln?</h2>
+    <div class="grid2">
+      <div><h4>Wettbewerbsdepot (wird gewertet)</h4><ul class="clean">
+        <li>In Euro gehandelte Aktien aus DAX, MDAX, TecDAX, SDAX, EuroSTOXX 50, Dow Jones, FTSE MIB, Nasdaq 100, ATX, LuxX und dem Global Challenges Index (Nachhaltigkeitsindex)</li>
+        <li>„Selection Europe“ – Aktien aus dem STOXX Europe 600</li>
+        <li>Ausgewählte Fonds, ETFs und festverzinsliche Wertpapiere</li></ul></div>
+      <div><h4>Nur im Trainingsdepot zusätzlich</h4><ul class="clean">
+        <li><b>Kryptowährungen</b> – Gebühr 0,35 % vom Kurswert, mindestens 0,01 €</li>
+        <li><b>Zertifikate</b> (Index-Zertifikate) – Gebühr 0,3 %, mindestens 15 €</li></ul>
+        <p class="small">Das Trainingsdepot fließt in keine Wertung ein – perfekt zum Ausprobieren.</p></div>
+    </div>
+  </div>
+  <div id="t-m5-sort"></div>
+
+  <div class="card">
+    <h2>Besonderheiten bei Anleihen</h2>
+    <ul class="clean">
+      <li>Statt einer Stückzahl gibst du den <b>Nennwert in Euro</b> an (z.&nbsp;B. 5.000 €).</li>
+      <li>Der Kurs (und auch ein Limit) wird in <b>Prozent vom Nennwert</b> angegeben. 98,50 % heißt: Für 5.000 € Nennwert zahlst du 4.925 €.</li>
+      <li><b>Stückzinsen:</b> Wer eine Anleihe zwischen zwei Zinsterminen kauft, zahlt dem Verkäufer die bisher aufgelaufenen Zinsen. Im Spiel werden sie pro Zinstag berechnet.</li>
+      <li>Die Zinsen werden dir zum Fälligkeitstag gutgeschrieben – im Spiel ohne Kapitalertragsteuer.</li>
+    </ul>
+    <div class="formula">Kurswert&nbsp;&nbsp;&nbsp;&nbsp;= Nennwert × Kurs in %<br>Stückzinsen = Nennwert × Zinssatz × Zinstage ÷ 365<br>Gesamt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= Kurswert + Stückzinsen + Gebühr (0,3 % vom Kurswert, mind. 15 €)</div>
+  </div>
+  <div id="t-m5-bond"></div>
+  <div id="t-m5-etf"></div>
+</section>
+
+<!-- ============ M6 ============ -->
+<section class="page" id="pg-m6">
+  <div class="mod-head"><span class="mod-num">Modul 6</span><h1>Besondere Ereignisse</h1><p class="lead">Manchmal passiert mit deinen Aktien etwas Besonderes: eine Dividende, ein Aktiensplit oder neue Aktien. Das Spiel bucht alles automatisch – du musst nur verstehen, was passiert.</p></div>
+
+  <div class="card tint-b">
+    <h3>Zwei Grundregeln für alle Ereignisse</h3>
+    <ol>
+      <li>Entscheidend ist, dass das Wertpapier <b>bereits am Börsentag vor dem Ereignis</b> in deinem Depot lag.</li>
+      <li>Offene Orders <b>mit Limit und/oder Stop</b> für das betroffene Wertpapier werden bei Dividenden, Ausschüttungen, Bezugsrechtshandel, Berichtigungsaktien, Splits und Reverse Splits <b>gebührenfrei gelöscht</b>. Du musst sie danach neu erteilen!</li>
+    </ol>
+  </div>
+
+  <div class="grid2 mb">
+    <div class="card"><h3>💶 Dividende</h3><p>Ein Teil des Gewinns pro Aktie. Im Spiel wird sie am Tag der „ex Dividende“-Notierung gutgeschrieben. An diesem Tag fällt der Kurs ungefähr um die Höhe der Dividende. Dividenden in Fremdwährung werden in Euro umgerechnet. Fondsausschüttungen laufen genauso.</p></div>
+    <div class="card"><h3>📜 Bezugsrechte</h3><p>Bei einer Kapitalerhöhung bekommen Aktionär:innen das Recht, neue Aktien günstiger zu kaufen. Im Spiel kannst du Bezugsrechte <b>nicht ausüben</b> – sie werden automatisch zum ersten Geldkurs am „ex Bezugsrecht“-Tag verkauft. Den Erlös bekommst du gutgeschrieben.</p></div>
+    <div class="card"><h3>🎁 Berichtigungsaktien</h3><p>„Gratisaktien“, die eine AG aus Rücklagen ausgibt. Der Kurs sinkt entsprechend, der Wert bleibt gleich. Im Spiel werden sie <b>nicht zugeteilt, sondern verkauft</b> – du bekommst einen Ausgleichsbetrag in Euro.</p></div>
+    <div class="card"><h3>🏦 Zinsen</h3><p>Zinsen für Anleihen werden am Fälligkeitstag gutgeschrieben. Es wird keine Kapitalertragsteuer abgezogen.</p></div>
+  </div>
+  <div id="t-m6-div"></div>
+
+  <div class="card">
+    <h2>Split und Reverse Split</h2>
+    <div class="grid2">
+      <div><h4>Aktiensplit</h4><p>Die AG teilt ihre Aktien. Bei einem Split 1:2 wird aus 1 Aktie 2 Aktien – der Kurs halbiert sich. Dein Depotwert bleibt gleich, die einzelne Aktie wird nur „günstiger“.</p>
+      <div class="formula">10 Aktien × 100 € = 1.000 €<br>↓ Split 1:2<br>20 Aktien × 50 € = 1.000 €</div></div>
+      <div><h4>Reverse Split</h4><p>Das Gegenteil: Mehrere alte Aktien werden zu einer neuen zusammengelegt. Oft bei sehr niedrigen Kursen. Bleibt ein Rest, der keine ganze Aktie ergibt, bekommst du ihn als <b>Spitzenausgleich</b> in Euro.</p>
+      <div class="formula">25 Aktien × 0,50 € = 12,50 €<br>↓ Reverse Split 10:1<br>2 Aktien × 5,00 € = 10,00 €<br>+ Spitzenausgleich: 5 × 0,50 € = 2,50 €</div></div>
+    </div>
+  </div>
+  <div id="t-m6-split"></div>
+  <div id="t-m6-rsplit"></div>
+  <div id="t-m6-orders"></div>
+</section>
+
+<!-- ============ M7 ============ -->
+<section class="page" id="pg-m7">
+  <div class="mod-head"><span class="mod-num">Modul 7</span><h1>Wertung & Preise</h1><p class="lead">Wie wird entschieden, wer gewinnt? Und was gibt es zu gewinnen?</p></div>
+
+  <div class="grid2 mb">
+    <div class="card">
+      <h3>Wertung 1: Depotgesamtwert</h3>
+      <div class="formula">Depotgesamtwert =<br>&nbsp; Kurswerte aller Wertpapiere im Depot<br>+ Restkapital (Kontostand)<br>+ aufgelaufene Stückzinsen</div>
+      <p class="small">Bei Gleichstand gewinnt das Depot mit dem höheren Nachhaltigkeitsertrag. Wurden keine nachhaltigen Wertpapiere gehandelt: das Depot mit weniger abgerechneten Kaufaufträgen.</p>
+    </div>
+    <div class="card tint-g">
+      <h3>Wertung 2: Nachhaltigkeit <span class="nh"></span></h3>
+      <p>Hier zählt der <b>Nachhaltigkeitsertrag</b>: die aufsummierten Kursgewinne und -verluste aller im Depot gehandelten nachhaltigen Wertpapiere.</p>
+      <p>Nachhaltig sind alle Aktien des <b>Global Challenges Index (GCX)</b>, die in Stuttgart gehandelt werden, sowie <b>ausgewählte ETFs</b> – erkennbar am blau-grünen Symbol.</p>
+      <p class="small">Bei Gleichstand gewinnt das Depot mit weniger abgerechneten Kaufaufträgen.</p>
+    </div>
+  </div>
+  <div id="t-m7-dgw"></div>
+  <div id="t-m7-nh"></div>
+
+  <div class="card">
+    <h2>Ranglisten</h2>
+    <p>Nach jedem Börsentag werden über Nacht Ranglisten nach Depotgesamtwert und Nachhaltigkeitsertrag berechnet. Am nächsten Tag siehst du sie in deinem Spielbereich. Es gibt Ranglisten auf Ebene der Sparkasse, des Verbands bzw. Bundeslands, deutschlandweit und europaweit.</p>
+  </div>
+
+  <div class="card">
+    <h2>Was gibt es zu gewinnen? (Spielrunde 2025/26)</h2>
+    <div class="grid3">
+      <div class="card tint-y" style="margin:0"><h3>🏆 Berlin</h3><p>Die drei besten Teams Deutschlands in jeder Wertung reisen zur Planspiel-Börse-Gala nach Berlin – drei Tage mit Rahmenprogramm.</p></div>
+      <div class="card tint-b" style="margin:0"><h3>🇪🇺 Brüssel</h3><p>Die Erstplatzierten beider Wertungen fahren zusätzlich zum European Event nach Brüssel und treffen dort die besten Teams aus Europa.</p></div>
+      <div class="card tint-g" style="margin:0"><h3>🏫 Schulpreise</h3><p>Die Schulen der fünf Siegerteams erhalten Geld für ein Schulprojekt: 4.000 €, 3.500 €, 3.000 €, 2.500 € und 2.000 €.</p></div>
+    </div>
+    <p class="small" style="margin-top:12px">Zusätzlich gibt es oft Preise der Sparkasse vor Ort. Sachpreise werden nicht bar ausgezahlt. Wer sich nach der Gewinnbenachrichtigung nicht rechtzeitig meldet, verliert den Anspruch.</p>
+  </div>
+
+  <div class="card tint-r">
+    <h3>Nur ein Preis pro Team</h3>
+    <p>Ein Team kann nur in <b>einer</b> der beiden Wertungen einen Preis bekommen. Landet es in beiden auf einem Gewinnplatz, zählt die <b>bessere Platzierung</b>; in der anderen Wertung rückt das nächste Team nach. Bei gleicher Platzierung bekommt es den Preis in der Depotgesamtwertung.</p>
+    <p>Und: Wer seinen Account vor Ende der Spielrunde löscht, verliert jeden Gewinnanspruch. Fällt ein Team dadurch unter die Mindestgröße, wird es ausgeschlossen.</p>
+  </div>
+  <div id="t-m7-prize"></div>
+  <div id="t-m7-tie"></div>
+</section>
+
+<!-- ============ PRAXIS ============ -->
+<section class="page" id="pg-px">
+  <div class="mod-head"><span class="mod-num">Praxis</span><h1>Dein Übungsdepot</h1><p class="lead">Jetzt wird gehandelt! Hier gelten die Regeln aus dem Spiel: Gebühren, 20-%-Grenze, Penny Stocks, Limit- und Stop-Orders, Laufzeiten und besondere Ereignisse. Erfülle die Missionen für Extrapunkte.</p></div>
+  <div class="card tint-y"><b>So geht's:</b> Kaufe und verkaufe Wertpapiere über das Orderformular. Mit „Nächster Börsentag“ spulst du einen Tag vor – die Kurse ändern sich, offene Orders werden geprüft und besondere Ereignisse treten ein. <span class="small">Alle Wertpapiere sind erfunden, die Kurse zufällig.</span></div>
+
+  <h3 style="margin-top:20px">Missionen</h3>
+  <div class="missions mb" id="missions"></div>
+
+  <div class="sim-kpis" id="simKpis"></div>
+  <div class="row" style="margin:-4px 0 16px"><button class="btn dark" id="nextDay">Nächster Börsentag ▶</button><button class="btn ghost" id="simReset">Depot zurücksetzen</button><div class="evcal" id="evcal"></div></div>
+
+  <div class="sim-grid">
+    <div>
+      <div class="card"><h3>Handelbare Wertpapiere</h3><div class="tbl-wrap"><table class="tbl" id="mkt"></table></div></div>
+      <div class="card"><h3>Orderformular</h3><div id="oform"></div></div>
+    </div>
+    <div>
+      <div class="card"><h3>Mein Depot</h3><div class="tbl-wrap" id="depot"></div></div>
+      <div class="card"><h3>Offene Aufträge</h3><div class="tbl-wrap" id="open"></div></div>
+      <div class="card"><h3>Abrechnungen & Ereignisse</h3><div class="log" id="log"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEST ============ -->
+<section class="page" id="pg-test">
+  <div class="mod-head"><span class="mod-num">Abschlusstest</span><h1>Bist du bereit fürs Planspiel?</h1><p class="lead">14 Fragen quer durch alle Module. Beantworte alle Fragen und klicke dann auf „Test auswerten“. Jede richtige Antwort bringt 5 Punkte.</p></div>
+  <div id="testBox"></div>
+  <div class="row"><button class="btn primary" id="testSubmit">Test auswerten</button><button class="btn" id="testRetry" hidden>Test wiederholen</button><button class="btn dark" id="toEval" hidden onclick="go('eval')">Zur Auswertung →</button></div>
+  <div class="fb" id="testFb"></div>
+</section>
+
+<!-- ============ EVAL ============ -->
+<section class="page" id="pg-eval">
+  <div id="evalBox"></div>
+</section>
+
+  </main>
+</div>
+<footer>Inoffizielles Lernportal auf Basis der Spielanleitung „Planspiel Börse 2025“ (Basisinformationen, Einführung in das Wertpapiergeschäft, Teilnahmebedingungen und Spielregeln). Maßgeblich sind die offiziellen Regeln in der Planspiel-Börse-App und auf planspiel-boerse.de. Alle Wertpapiere im Übungsdepot sind frei erfunden. Keine Anlageberatung.</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== Helpers ===================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const fmt=(n,d=2)=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const eur=n=>fmt(n)+' €';
+const r2=n=>Math.round((n+Number.EPSILON)*100)/100;
+function parseDE(s){s=String(s).trim().replace(/[\s€%]/g,'');if(!s)return NaN;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  return parseFloat(s);}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+let toastT;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),1800);}
+
+/* ===================== State ===================== */
+const PAGES=[
+ {id:'start',t:'Start',s:'Willkommen'},
+ {id:'m1',t:'Börse & Kurse',s:'Modul 1',mod:'m1'},
+ {id:'m2',t:'Dein erster Kauf',s:'Modul 2',mod:'m2'},
+ {id:'m3',t:'Ordertypen',s:'Modul 3',mod:'m3'},
+ {id:'m4',t:'Spielregeln',s:'Modul 4',mod:'m4'},
+ {id:'m5',t:'Wertpapierarten',s:'Modul 5',mod:'m5'},
+ {id:'m6',t:'Besondere Ereignisse',s:'Modul 6',mod:'m6'},
+ {id:'m7',t:'Wertung & Preise',s:'Modul 7',mod:'m7'},
+ {id:'px',t:'Übungsdepot',s:'Praxis',mod:'px'},
+ {id:'test',t:'Abschlusstest',s:'14 Fragen'},
+ {id:'eval',t:'Auswertung',s:'Dein Ergebnis'}
+];
+const MODNAMES={m1:'Börse & Kurse',m2:'Erster Kauf',m3:'Ordertypen',m4:'Spielregeln',m5:'Wertpapierarten',m6:'Ereignisse',m7:'Wertung & Preise',px:'Übungsdepot'};
+const TASKS={};
+let S={res:{},test:null,name:''};
+function load(){try{const x=localStorage.getItem('boersenfit-v1');if(x)S=Object.assign(S,JSON.parse(x));}catch(e){}}
+function save(){try{localStorage.setItem('boersenfit-v1',JSON.stringify(S));}catch(e){}}
+function reg(id,pts,mod){TASKS[id]={pts,mod};}
+function award(id,pts){if(S.res[id])return;S.res[id]={ok:pts>0,pts};save();updateHUD();toast(pts>0?`+${pts} Punkte`:'Lösung angezeigt');}
+const TESTMAX=70;
+function totals(){let p=0,m=0;for(const id in TASKS){m+=TASKS[id].pts;if(S.res[id])p+=S.res[id].pts;}
+  m+=TESTMAX;if(S.test)p+=S.test.score*5;return{p,m};}
+function modStat(mod){let p=0,m=0,n=0,d=0;for(const id in TASKS){if(TASKS[id].mod!==mod)continue;m+=TASKS[id].pts;n++;if(S.res[id]){p+=S.res[id].pts;d++;}}return{p,m,n,d};}
+function updateHUD(){const t=totals();$('#score').textContent=`${t.p} / ${t.m} P`;
+  const n=Object.keys(TASKS).length+1,d=Object.keys(S.res).filter(k=>TASKS[k]).length+(S.test?1:0);
+  const pc=Math.round(d/n*100);$('#pfill').style.width=pc+'%';$('#ptxt').textContent=pc+' % geschafft';renderNav();}
+
+/* ===================== Navigation ===================== */
+let cur='start';
+function renderNav(){$('#nav').innerHTML=PAGES.map((p,i)=>{let done=false;
+  if(p.mod){const s=modStat(p.mod);done=s.n>0&&s.d===s.n;} else if(p.id==='test')done=!!S.test; else if(p.id==='start')done=true;
+  return `<li><button class="${p.id===cur?'active':''} ${done?'done':''}" data-p="${p.id}"><span class="n">${done&&p.id!==cur?'✓':i}</span><span class="lbl">${p.t}<small>${p.s}</small></span></button></li>`;}).join('');
+  $$('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));}
+function go(id){cur=id;$$('.page').forEach(s=>s.classList.toggle('show',s.id==='pg-'+id));renderNav();$('#side').classList.remove('open');
+  window.scrollTo({top:0,behavior:'smooth'});if(id==='eval')renderEval();if(id==='px')renderSim();}
+function addPagers(){PAGES.forEach((p,i)=>{if(p.id==='eval')return;const sec=$('#pg-'+p.id);const d=document.createElement('div');d.className='pager';
+  d.innerHTML=(i>0?`<button class="btn" onclick="go('${PAGES[i-1].id}')">← ${PAGES[i-1].t}</button>`:'<span></span>')+
+  `<button class="btn primary" onclick="go('${PAGES[i+1].id}')">Weiter: ${PAGES[i+1].t} →</button>`;sec.appendChild(d);});}
+
+/* ===================== Task components ===================== */
+function mc(sel,t){const el=$(sel);const P=t.pts||10;reg(t.id,P,t.mod);el.className='task';
+  el.innerHTML=`<div class="task-h"><span class="tag">${t.tag||'Quiz'}</span><span class="pts">${P} P</span></div><p class="q">${t.q}</p><div class="opts">${t.o.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}</div><div class="fb"></div>`;
+  let tries=0;const fb=$('.fb',el);
+  const done=()=>{$$('.opt',el).forEach(b=>{b.disabled=true;if(+b.dataset.i===t.a)b.classList.add('ok');});fb.className='fb show good';fb.innerHTML='<b>Richtig!</b> '+t.ex;el.classList.add('solved');};
+  if(S.res[t.id]){done();return;}
+  $$('.opt',el).forEach(b=>b.onclick=()=>{const i=+b.dataset.i;
+    if(i===t.a){award(t.id,tries===0?P:Math.ceil(P/2));done();}
+    else{tries++;b.classList.add('bad');b.disabled=true;el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),400);
+      fb.className='fb show warn';fb.innerHTML='<b>Noch nicht.</b> '+(t.hint||'Versuch es noch einmal.');}});}
+
+function num(sel,t){const el=$(sel);const P=t.pts||15;reg(t.id,P,t.mod);el.className='task';
+  el.innerHTML=`<div class="task-h"><span class="tag">${t.tag||'Rechenaufgabe'}</span><span class="pts">${P} P</span></div><p class="q">${t.q}</p><div class="nf">${t.f.map((f,i)=>`<label class="fld"><span>${f.l}</span><span class="inp"><input inputmode="decimal" data-i="${i}" placeholder="${f.ph||''}"><em>${f.u??'€'}</em></span></label>`).join('')}</div><div class="row"><button class="btn primary chk">Prüfen</button><button class="btn ghost sol" hidden>Lösung zeigen</button></div><div class="fb"></div>`;
+  let tries=0;const fb=$('.fb',el);
+  const reveal=ok=>{$$('input',el).forEach((inp,i)=>{inp.value=fmt(t.f[i].a,t.f[i].d??2);inp.disabled=true;inp.classList.add('ok');});$('.chk',el).disabled=true;$('.sol',el).hidden=true;
+    fb.className='fb show '+(ok?'good':'info');fb.innerHTML=(ok?'<b>Richtig!</b> ':'<b>Lösungsweg:</b> ')+t.ex;el.classList.add('solved');};
+  if(S.res[t.id]){reveal(S.res[t.id].ok);return;}
+  $('.chk',el).onclick=()=>{let all=true;$$('input',el).forEach((inp,i)=>{const v=parseDE(inp.value),f=t.f[i];const ok=Math.abs(v-f.a)<=(f.tol??0.011);inp.classList.toggle('bad',!ok);inp.classList.toggle('ok',ok);if(!ok)all=false;});
+    if(all){award(t.id,tries===0?P:Math.ceil(P/2));reveal(true);}
+    else{tries++;fb.className='fb show warn';fb.innerHTML='<b>Noch nicht ganz.</b> '+(t.hint||'Prüfe deine Rechnung.');if(tries>=2)$('.sol',el).hidden=false;}};
+  $$('input',el).forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')$('.chk',el).click();}));
+  $('.sol',el).onclick=()=>{award(t.id,0);reveal(false);};}
+
+function match(sel,t){const el=$(sel);const P=t.pts||20;reg(t.id,P,t.mod);el.className='task';
+  el.innerHTML=`<div class="task-h"><span class="tag">${t.tag||'Zuordnen'}</span><span class="pts">${P} P</span></div><p class="q">${t.q}</p><div>${t.items.map((it,i)=>`<div class="mrow"><span>${it.x}</span><select class="plain" data-i="${i}"><option value="">– bitte wählen –</option>${t.opts.map((o,j)=>`<option value="${j}">${o}</option>`).join('')}</select></div>`).join('')}</div><div class="row"><button class="btn primary chk">Prüfen</button><button class="btn ghost sol" hidden>Lösung zeigen</button></div><div class="fb"></div>`;
+  let tries=0;const fb=$('.fb',el);
+  const reveal=ok=>{$$('select',el).forEach((s,i)=>{s.value=t.items[i].a;s.disabled=true;s.classList.add('ok');});$('.chk',el).disabled=true;$('.sol',el).hidden=true;
+    fb.className='fb show '+(ok?'good':'info');fb.innerHTML=(ok?'<b>Alles richtig zugeordnet!</b> ':'<b>So ist es richtig:</b> ')+(t.ex||'');el.classList.add('solved');};
+  if(S.res[t.id]){reveal(S.res[t.id].ok);return;}
+  $('.chk',el).onclick=()=>{let ok=0;$$('select',el).forEach((s,i)=>{const good=s.value!==''&&+s.value===t.items[i].a;s.classList.toggle('ok',good);s.classList.toggle('bad',!good);if(good)ok++;});
+    if(ok===t.items.length){award(t.id,tries===0?P:Math.ceil(P/2));reveal(true);}
+    else{tries++;fb.className='fb show warn';fb.innerHTML=`<b>${ok} von ${t.items.length} richtig.</b> Korrigiere die rot markierten Zeilen.`;if(tries>=2)$('.sol',el).hidden=false;}};
+  $('.sol',el).onclick=()=>{award(t.id,0);reveal(false);};}
+
+/* Order scenario player */
+function scen(sel,s){const el=$(sel);
+  el.innerHTML=`<div class="scen"><div class="scen-h">${s.title}</div><p class="small" style="margin:2px 0">${s.txt}</p><div class="ticks">${s.ticks.map((v,i)=>`<div class="tick" data-i="${i}"><small>${s.label} ${i+1}</small><b>${fmt(v)} €</b><span class="st"></span></div>`).join('')}</div><div class="row"><button class="btn">▶ Ablauf abspielen</button><span class="small stat"></span></div></div>`;
+  const btn=$('button',el),stat=$('.stat',el);
+  btn.onclick=()=>{btn.disabled=true;const tk=$$('.tick',el);tk.forEach(x=>{x.className='tick';$('.st',x).textContent='';});
+    let i=0,trig=false,fin=false;
+    const step=()=>{if(i>0)tk[i-1].classList.remove('cur');if(i>=s.ticks.length||fin){btn.disabled=false;btn.textContent='↺ Nochmal abspielen';if(!fin)stat.textContent='Order wurde nicht ausgeführt.';return;}
+      const v=s.ticks[i],t=tk[i];t.classList.add('cur');let msg='',cls='';
+      if(s.kind==='limitBuy'){if(v<=s.lvl){msg='ausgeführt';cls='exec';fin=true;stat.innerHTML=`Kurs ${fmt(v)} € ≤ Limit ${fmt(s.lvl)} € → <b>gekauft zu ${fmt(v)} €</b>`;}else msg='über Limit';}
+      else if(s.kind==='stopLoss'||s.kind==='stopBuy'){
+        if(trig){msg='ausgeführt';cls='exec';fin=true;stat.innerHTML=`Ausführung zum nächsten Kurs: <b>${fmt(v)} €</b>`;}
+        else if((s.kind==='stopLoss'&&v<=s.lvl)||(s.kind==='stopBuy'&&v>=s.lvl)){trig=true;msg='Stop ausgelöst';cls='trig';stat.textContent=`Stop-Marke ${fmt(s.lvl)} € erreicht → wird zum unlimitierten Auftrag (${s.kind==='stopLoss'?'bestens':'billigst'})…`;}
+        else msg='wartet';}
+      $('.st',t).textContent=msg;if(cls)t.classList.add(cls);i++;setTimeout(step,850);};
+    step();};}
+
+/* ===================== Module 1 widgets ===================== */
+function orderbook(){const B=[[10.30,100],[10.20,150],[10.10,200],[10.00,150]],A=[[9.90,120],[10.00,130],[10.10,150],[10.20,200]];
+  const prices=[9.90,10.00,10.10,10.20,10.30];const el=$('#orderbook');const tried={};
+  el.innerHTML=`<div class="ob"><div><h4 class="pos">Kaufaufträge</h4><table class="tbl"><tr><th>Käufer</th><th class="r">Stück</th><th class="r">höchstens</th></tr>${B.map((b,i)=>`<tr><td>Käufer ${'ABCD'[i]}</td><td class="r">${b[1]}</td><td class="r">${fmt(b[0])} €</td></tr>`).join('')}</table></div>
+  <div><h4 class="neg">Verkaufsaufträge</h4><table class="tbl"><tr><th>Verkäufer</th><th class="r">Stück</th><th class="r">mindestens</th></tr>${A.map((a,i)=>`<tr><td>Verkäufer ${'EFGH'[i]}</td><td class="r">${a[1]}</td><td class="r">${fmt(a[0])} €</td></tr>`).join('')}</table></div></div>
+  <h4 style="margin-top:16px">Teste einen möglichen Kurs:</h4><div class="obp">${prices.map(p=>`<button class="chip-btn" data-p="${p}">${fmt(p)} €</button>`).join('')}</div><div class="tbl-wrap"><table class="tbl" id="obres"><tr><th>Kurs</th><th class="r">Nachfrage</th><th class="r">Angebot</th><th class="r">Umsatz</th><th style="width:35%"></th></tr></table></div>`;
+  $$('.chip-btn',el).forEach(b=>b.onclick=()=>{const p=+b.dataset.p;b.classList.add('on');if(tried[p])return;
+    const d=B.filter(x=>x[0]>=p).reduce((s,x)=>s+x[1],0),s=A.filter(x=>x[0]<=p).reduce((s2,x)=>s2+x[1],0),u=Math.min(d,s);tried[p]=u;
+    const rows=Object.keys(tried).map(Number).sort((a,b)=>a-b);const mx=Math.max(...Object.values(tried));
+    $('#obres').innerHTML='<tr><th>Kurs</th><th class="r">Nachfrage</th><th class="r">Angebot</th><th class="r">Umsatz</th><th style="width:35%"></th></tr>'+rows.map(pp=>{const dd=B.filter(x=>x[0]>=pp).reduce((a,x)=>a+x[1],0),ss=A.filter(x=>x[0]<=pp).reduce((a,x)=>a+x[1],0),uu=Math.min(dd,ss);
+      return `<tr><td><b>${fmt(pp)} €</b></td><td class="r">${dd}</td><td class="r">${ss}</td><td class="r"><b>${uu}</b></td><td><span class="barv ${uu===mx&&rows.length===5?'best':''}" style="width:${uu/400*100}%"></span></td></tr>`;}).join('');});}
+
+/* ===================== Module 2 mini purchase ===================== */
+function mini(){const L=[{n:'Alpenstrom AG',a:42.60,nh:1},{n:'NordTech AG',a:118.40},{n:'Welt-Nachhaltig ETF',a:63.20,nh:1}];
+  reg('m2-first',15,'m2');const el=$('#mini');
+  el.innerHTML=`<div class="pick">${L.map((x,i)=>`<label><input type="radio" name="mini" value="${i}" ${i===0?'checked':''}><b>${x.n}${x.nh?'<span class="nh"></span>':''}</b><span class="small">Briefkurs ${eur(x.a)}</span></label>`).join('')}</div>
+  <div class="row"><label class="fld" style="max-width:220px"><span>Stückzahl</span><span class="inp"><input id="miniQ" inputmode="numeric" value="50"><em>Stück</em></span></label><button class="btn primary" id="miniBuy" style="align-self:flex-end">Kaufen (billigst)</button></div>
+  <div class="preview" id="miniPrev"></div><div id="miniOut"></div>`;
+  const calc=()=>{const x=L[+$('input[name=mini]:checked',el).value],q=parseInt($('#miniQ').value)||0,kw=r2(q*x.a),f=r2(Math.max(15,kw*.003));return{x,q,kw,f,tot:r2(kw+f)};};
+  const upd=()=>{const c=calc();$('#miniPrev').innerHTML=`<div class="ln"><span>Kurswert (${c.q} × ${eur(c.x.a)})</span><b>${eur(c.kw)}</b></div><div class="ln"><span>Gebühr ${c.kw*.003<15?'(Mindestgebühr)':'(0,3 %)'}</span><b>${eur(c.f)}</b></div><div class="ln"><span>Gesamtpreis</span><b>${eur(c.tot)}</b></div><div class="ln small"><span>Gebühr in % vom Kurswert</span><span>${c.kw?fmt(c.f/c.kw*100):'–'} %</span></div>`;};
+  $$('input',el).forEach(i=>i.addEventListener('input',upd));upd();
+  $('#miniBuy').onclick=()=>{const c=calc(),o=$('#miniOut');
+    if(c.q<1){o.innerHTML='<div class="fb show warn">Gib eine Stückzahl von mindestens 1 ein.</div>';return;}
+    if(c.kw>10000){o.innerHTML=`<div class="fb show bad"><b>Auftrag abgelehnt!</b> Der Kauf hätte einen Kurswert von ${eur(c.kw)} – das ist mehr als 20 % deines Depots (10.000 €). Diese Regel lernst du in Modul 4 genauer kennen. Wähle eine kleinere Stückzahl.</div>`;return;}
+    o.innerHTML=`<div class="receipt"><div style="font-weight:700;margin-bottom:6px">WERTPAPIERABRECHNUNG – KAUF</div><div class="ln"><span>${c.x.n}</span><span>${c.q} Stück</span></div><div class="ln"><span>Ausführungskurs (Brief)</span><span>${eur(c.x.a)}</span></div><div class="ln"><span>Kurswert</span><span>${eur(c.kw)}</span></div><div class="ln"><span>Gebühr</span><span>${eur(c.f)}</span></div><div class="ln tot"><span>Belastung Konto</span><span>${eur(c.tot)}</span></div><div class="ln"><span>Neuer Kontostand</span><span>${eur(50000-c.tot)}</span></div></div>
+    <div class="fb show good"><b>Geschafft – dein erster Kauf!</b> ${c.kw<5000?'Tipp: Bei weniger als 5.000 € Kurswert zahlst du die Mindestgebühr von 15 €. Das sind hier '+fmt(c.f/c.kw*100)+' % – größere Käufe sind günstiger.':'Da dein Kurswert über 5.000 € liegt, zahlst du genau 0,3 % Gebühr.'}</div>`;
+    if(!S.res['m2-first'])award('m2-first',15);};}
+
+/* ===================== Tasks ===================== */
+function buildTasks(){
+ mc('#t-m1-ob',{id:'m1-ob',mod:'m1',tag:'Orderbuch',q:'Zu welchem Kurs wird im Orderbuch oben gehandelt?',o:['9,90 €','10,00 €','10,10 €','10,20 €'],a:2,
+  ex:'Bei 10,10 € wollen Käufer 450 Stück kaufen und Verkäufer 400 Stück verkaufen – es kommen 400 Stück zustande. Das ist der größte mögliche Umsatz.',hint:'Gesucht ist der Kurs, bei dem die meisten Aktien den Besitzer wechseln. Teste alle Kurse im Orderbuch.'});
+ mc('#t-m1-bidask',{id:'m1-bidask',mod:'m1',q:'Für die Aktie „Sonnenwerk AG“ siehst du: Geldkurs 31,20 € · Briefkurs 31,35 €. Du willst kaufen. Welcher Kurs wird abgerechnet?',o:['Der Geldkurs: 31,20 €','Der Briefkurs: 31,35 €','Der Mittelwert: 31,275 €','Der Schlusskurs von gestern'],a:1,
+  ex:'Beim Kauf zahlst du den Briefkurs (Ask) – den Preis, zu dem jemand verkaufen möchte.'});
+ num('#t-m1-spread',{id:'m1-spread',mod:'m1',pts:10,q:'Du kaufst 100 Aktien zu 31,35 € (Brief) und verkaufst sie sofort wieder zum Geldkurs von 31,20 €. Wie viel Euro verlierst du allein durch den Spread (ohne Gebühren)?',f:[{l:'Verlust durch Spread',a:15}],
+  ex:'100 × (31,35 € − 31,20 €) = 100 × 0,15 € = 15,00 €.',hint:'Rechne Stückzahl × Differenz zwischen Brief- und Geldkurs.'});
+ mc('#t-m1-bull',{id:'m1-bull',mod:'m1',q:'In den Nachrichten heißt es: „Der Bär regiert die Märkte.“ Was bedeutet das?',o:['Die Kurse steigen stark.','Die Kurse fallen.','Die Börse ist geschlossen.','Es werden besonders viele Aktien gehandelt.'],a:1,
+  ex:'Der Bär schlägt mit der Tatze nach unten – er steht für fallende Kurse (Bärenmarkt).'});
+ mc('#t-m1-place',{id:'m1-place',mod:'m1',q:'Du gibst am Sonntagabend einen Kaufauftrag „billigst“ auf. Was passiert?',o:['Er wird abgelehnt, weil die Börse geschlossen ist.','Er wird sofort zum Kurs vom Freitag ausgeführt.','Er wird ausgeführt, sobald der Börsenplatz am nächsten Börsentag öffnet.','Er muss am Montag neu eingegeben werden.'],a:2,
+  ex:'Aufträge kannst du auch außerhalb der Handelszeiten erteilen. Sie werden ausgeführt, sobald der Börsenplatz öffnet – unter Berücksichtigung von Liquidität und Limits.'});
+
+ num('#t-m2-c1',{id:'m2-c1',mod:'m2',q:'Du kaufst <b>40 Aktien</b> der Brezelwerk AG „billigst“. Der Briefkurs liegt bei <b>52,30 €</b>. Berechne Kurswert, Gebühr und Gesamtpreis.',
+  f:[{l:'Kurswert',a:2092},{l:'Gebühr',a:15},{l:'Gesamtpreis',a:2107}],
+  ex:'Kurswert: 40 × 52,30 € = 2.092,00 €. 0,3 % davon wären nur 6,28 € – also greift die Mindestgebühr von 15,00 €. Gesamt: 2.107,00 €.',hint:'Denk an die Mindestgebühr von 15 €!'});
+ num('#t-m2-c2',{id:'m2-c2',mod:'m2',q:'Jetzt etwas größer: <b>150 Aktien</b> der NordTech AG zum Briefkurs von <b>48,50 €</b>. Berechne Kurswert, Gebühr und Gesamtpreis.',
+  f:[{l:'Kurswert',a:7275},{l:'Gebühr',a:21.83,tol:0.02},{l:'Gesamtpreis',a:7296.83,tol:0.02}],
+  ex:'Kurswert: 150 × 48,50 € = 7.275,00 €. Gebühr: 0,3 % × 7.275 € = 21,83 € (über 15 €, also gilt der Prozentsatz). Gesamt: 7.296,83 €.',hint:'Gebühr = Kurswert × 0,003. Liegt das Ergebnis über 15 €, gilt es.'});
+ mc('#t-m2-small',{id:'m2-small',mod:'m2',q:'Lena kauft eine Aktie für einen Kurswert von 500 €. Wie viel Prozent ihres Kurswerts zahlt sie an Gebühren?',o:['0,3 %','1,5 %','3 %','15 %'],a:2,
+  ex:'Sie zahlt die Mindestgebühr von 15 €. 15 € von 500 € sind 3 %. Die Aktie muss also erst um 3 % steigen, bevor Lena überhaupt im Plus ist – plus Gebühr beim Verkauf!'});
+ num('#t-m2-sell',{id:'m2-sell',mod:'m2',q:'Erinnerst du dich an die 40 Brezelwerk-Aktien (Kaufpreis gesamt 2.107,00 €)? Der Geldkurs steigt auf <b>55,10 €</b> und du verkaufst „bestens“. Wie hoch ist dein Verkaufserlös – und wie viel Gewinn hast du insgesamt gemacht?',
+  f:[{l:'Verkaufserlös',a:2189},{l:'Gewinn',a:82}],
+  ex:'Kurswert: 40 × 55,10 € = 2.204,00 €. Gebühr: Mindestgebühr 15,00 €. Erlös: 2.189,00 €. Gewinn: 2.189,00 € − 2.107,00 € = 82,00 €.',hint:'Erlös = Kurswert − Gebühr. Gewinn = Erlös − Kaufpreis.'});
+
+ mc('#t-m3-limit',{id:'m3-limit',mod:'m3',q:'Zu welchem Kurs wurde die Limit-Kauforder (Limit 24,80 €) ausgeführt?',o:['24,80 € – genau zum Limit','24,60 € – zum ersten Briefkurs, der das Limit erreicht oder unterschreitet','24,90 €','Gar nicht'],a:1,
+  ex:'Die Order wird ausgeführt, sobald der abrechnungsrelevante Kurs das Limit erreicht oder unterschreitet – und zwar zu diesem Kurs: 24,60 €. Bei 24,90 € war sie noch nicht dran.',hint:'Spiel den Ablauf oben ab und beobachte, wann das Feld grün wird.'});
+ mc('#t-m3-sl',{id:'m3-sl',mod:'m3',q:'Bei welchem Kurs wurden deine Aktien mit der Stop-Loss-Order (Stop 29,00 €) verkauft?',o:['29,00 €','28,90 €','28,40 €','29,20 €'],a:2,
+  ex:'Bei 28,90 € wurde die Stop-Marke unterschritten – der Stop wurde ausgelöst. Daraus wurde ein Verkauf „bestens“, abgerechnet zum nächsten Kurs: 28,40 €.',hint:'Achte darauf: Auslösen und Ausführen passieren nicht beim selben Kurs.'});
+ mc('#t-m3-sb',{id:'m3-sb',mod:'m3',q:'Wozu ist die Stop-Buy-Order in diesem Beispiel gut?',o:['Um möglichst günstig zu kaufen.','Um erst zu kaufen, wenn der Kurs eine Marke nach oben durchbricht – also ein Aufwärtstrend erkennbar ist.','Um Verluste zu begrenzen.','Um Gebühren zu sparen.'],a:1,
+  ex:'Mit Stop-Buy steigst du erst ein, wenn der Kurs die Marke (hier 12,50 €) erreicht oder überschreitet. Ausgeführt wurde zum nächsten Kurs: 12,80 €.'});
+ match('#t-m3-match',{id:'m3-match',mod:'m3',pts:20,q:'Welcher Ordertyp passt zu welcher Situation?',
+  opts:['Billigst','Bestens','Limit-Kauf','Limit-Verkauf','Stop-Loss','Stop-Buy'],
+  items:[{x:'Ich will die Aktie jetzt sofort kaufen – der genaue Preis ist mir egal.',a:0},{x:'Ich will kaufen, aber höchstens 40,00 € pro Aktie zahlen.',a:2},
+   {x:'Meine Aktie steht bei 70 €. Fällt sie unter 62 €, will ich raus, um größere Verluste zu vermeiden.',a:4},{x:'Ich verkaufe erst, wenn ich mindestens 60 € pro Aktie bekomme.',a:3},
+   {x:'Ich kaufe erst, wenn die Aktie über 100 € steigt und damit ein Aufwärtstrend beginnt.',a:5},{x:'Ich will meine Aktien sofort loswerden.',a:1}],
+  ex:'Billigst/Bestens = sofort, ohne Preisgrenze. Limit = Preisgrenze. Stop-Loss = Verlust begrenzen. Stop-Buy = Einstieg bei steigendem Kurs.'});
+ mc('#t-m3-cancel',{id:'m3-cancel',mod:'m3',q:'Deine Limit-Order mit 14 Tagen Laufzeit wurde nach Ablauf nicht ausgeführt und automatisch gestrichen. Was kostet dich das?',o:['2,50 €','15,00 €','0,3 % vom Kurswert','Nichts – das ist gebührenfrei'],a:3,
+  ex:'Streichungen wegen Laufzeitende oder eines besonderen Ereignisses sind gebührenfrei. Nur wenn du einen Auftrag selbst löschst, kostet das 2,50 €.'});
+
+ num('#t-m4-20',{id:'m4-20',mod:'m4',pts:20,q:'Euer Depotgesamtwert beträgt <b>52.000 €</b>. Ihr habt bereits <b>30 Aktien</b> der Alpenstrom AG (Kurs 200 €) im Depot und eine offene Kauforder über <b>10 weitere Aktien</b>. Wie viele Aktien könnt ihr <b>zusätzlich</b> höchstens kaufen (Kurs 200 €)?',
+  f:[{l:'Maximal zusätzliche Aktien',a:12,u:'Stück',d:0,tol:0}],
+  ex:'20 % von 52.000 € = 10.400 €. Bestand: 30 × 200 € = 6.000 €. Offene Order: 10 × 200 € = 2.000 €. Bleiben 10.400 € − 8.000 € = 2.400 € → 2.400 € ÷ 200 € = 12 Aktien.',hint:'Bestand UND offene Kaufaufträge zählen mit!'});
+ const TF=['Richtig','Falsch'];
+ mc('#t-m4-tf1',{id:'m4-tf1',mod:'m4',tag:'Richtig oder falsch',q:'„Wenn nur 50 von 80 gewünschten Aktien verfügbar sind, bekomme ich eben 50.“',o:TF,a:1,ex:'Falsch. Aufträge werden immer vollständig ausgeführt – eine Teilausführung gibt es nicht.'});
+ mc('#t-m4-tf2',{id:'m4-tf2',mod:'m4',tag:'Richtig oder falsch',q:'„Eine Aktie für 0,85 € kann ich im Spiel kaufen, sie wird nur langsamer ausgeführt.“',o:TF,a:1,ex:'Falsch. Liegt der Kurs unter 1,00 €, wird ein Kaufauftrag zwar angenommen, aber nicht ausgeführt. Verkaufen kannst du solche Wertpapiere aber.'});
+ mc('#t-m4-tf3',{id:'m4-tf3',mod:'m4',tag:'Richtig oder falsch',q:'„Für ein Wertpapier kann ich höchstens fünf Orders pro Tag erteilen.“',o:TF,a:0,ex:'Richtig. Du kannst zwar an mehreren Börsenplätzen ordern – aber höchstens fünf Orders pro Wertpapier und Tag.'});
+ mc('#t-m4-tf4',{id:'m4-tf4',mod:'m4',tag:'Richtig oder falsch',q:'„Wenn mein Konto nicht reicht, wird es kurzfristig überzogen – ich zahle dann Zinsen.“',o:TF,a:1,ex:'Falsch. Ein Depot kann nicht überzogen werden. Aufträge, die das Konto überziehen würden, werden abgelehnt.'});
+ mc('#t-m4-tf5',{id:'m4-tf5',mod:'m4',tag:'Richtig oder falsch',q:'„Gewertet wird das bessere Ergebnis aus Wettbewerbs- und Trainingsdepot.“',o:TF,a:1,ex:'Falsch. Nur das Wettbewerbsdepot wird gewertet. Für Trainingsdepots gibt es keine Ranglisten.'});
+ mc('#t-m4-date',{id:'m4-date',mod:'m4',q:'Euer Team hat bis zum 20. Januar zwei Kaufaufträge ausgeführt und eine Aktie verkauft. Was müsst ihr tun?',o:['Nichts – drei Aufträge sind erledigt.','Bis spätestens 25. Januar noch mindestens einen weiteren Kaufauftrag abrechnen lassen.','Bis zum letzten Handelstag noch irgendeinen Auftrag erteilen.','Eine weitere Aktie verkaufen.'],a:1,
+  ex:'Es zählen nur abgerechnete Kaufaufträge – Verkäufe zählen nicht. Ihr braucht drei Käufe bis einschließlich 25. Januar, sonst wird das Depot disqualifiziert.'});
+
+ match('#t-m5-sort',{id:'m5-sort',mod:'m5',pts:15,q:'Wo kannst du diese Wertpapiere handeln?',opts:['Wettbewerbs- und Trainingsdepot','Nur im Trainingsdepot'],
+  items:[{x:'Bitcoin',a:1},{x:'Eine DAX-Aktie',a:0},{x:'Ein ETF auf den MSCI World aus der Spielauswahl',a:0},{x:'Ein Index-Zertifikat',a:1},{x:'Eine börsengehandelte Bundesanleihe aus der Spielauswahl',a:0}],
+  ex:'Kryptowährungen und Zertifikate gibt es nur im Trainingsdepot. Aktien, Fonds, ETFs und Anleihen aus der Auswahl sind auch im Wettbewerbsdepot handelbar.'});
+ num('#t-m5-bond',{id:'m5-bond',mod:'m5',pts:20,q:'Du kaufst eine <b>3-%-Anleihe</b> mit einem <b>Nennwert von 5.000 €</b> zum Kurs von <b>98,50 %</b>. Seit dem letzten Zinstermin sind <b>73 Tage</b> vergangen. Berechne Kurswert, Stückzinsen und Gesamtpreis.',
+  f:[{l:'Kurswert',a:4925},{l:'Stückzinsen',a:30},{l:'Gesamtpreis',a:4970}],
+  ex:'Kurswert: 5.000 € × 98,50 % = 4.925,00 €. Stückzinsen: 5.000 € × 3 % × 73/365 = 30,00 €. Gebühr: 0,3 % von 4.925 € = 14,78 € → Mindestgebühr 15,00 €. Gesamt: 4.925 + 30 + 15 = 4.970,00 €.',hint:'Gebühr nicht vergessen – und prüfe, ob die Mindestgebühr greift.'});
+ mc('#t-m5-etf',{id:'m5-etf',mod:'m5',q:'Was ist der größte Vorteil eines ETFs auf den DAX 40 gegenüber einer einzelnen DAX-Aktie?',o:['Er kann nie an Wert verlieren.','Er garantiert feste Zinsen.','Das Risiko ist auf 40 Unternehmen verteilt (Risikostreuung).','Er wird von der 20-%-Grenze nicht erfasst.'],a:2,
+  ex:'Ein ETF bildet einen ganzen Index nach – geht es einem Unternehmen schlecht, fällt das weniger ins Gewicht. Aber Achtung: Auch ETFs können stark schwanken.'});
+
+ mc('#t-m6-div',{id:'m6-div',mod:'m6',q:'Brezelwerk zahlt eine Dividende. Ex-Tag ist Mittwoch. Du kaufst die Aktie am Mittwochmorgen. Bekommst du die Dividende?',o:['Ja, weil ich am Ex-Tag Aktionär:in bin.','Nein – die Aktie hätte schon am Börsentag davor (Dienstag) im Depot liegen müssen.','Ja, aber nur die Hälfte.','Nur, wenn ich die Aktie bis Freitag behalte.'],a:1,
+  ex:'Entscheidend ist, dass das Wertpapier bereits am Börsentag vor dem Ereignis im Depot lag. Am Ex-Tag fällt der Kurs ungefähr um die Dividende – Kauf am Ex-Tag bringt also keine „Gratis-Dividende“.'});
+ num('#t-m6-split',{id:'m6-split',mod:'m6',q:'Du hast <b>25 NordTech-Aktien</b> zu je <b>120 €</b>. NordTech führt einen <b>Aktiensplit 1:4</b> durch. Wie viele Aktien hast du danach, und wie hoch ist der neue Kurs (ohne sonstige Kursbewegung)?',
+  f:[{l:'Aktien nach dem Split',a:100,u:'Stück',d:0,tol:0},{l:'Neuer Kurs',a:30}],
+  ex:'Aus jeder Aktie werden 4: 25 × 4 = 100 Aktien. Der Kurs wird durch 4 geteilt: 120 € ÷ 4 = 30 €. Der Depotwert bleibt bei 3.000 €.'});
+ num('#t-m6-rsplit',{id:'m6-rsplit',mod:'m6',pts:20,q:'Du hast <b>47 Aktien</b> der Minimal Mining AG zu je <b>0,60 €</b>. Es gibt einen <b>Reverse Split 10:1</b>. Wie viele neue Aktien bekommst du, wie hoch ist der neue Kurs und wie viel Spitzenausgleich wird dir gutgeschrieben?',
+  f:[{l:'Neue Aktien',a:4,u:'Stück',d:0,tol:0},{l:'Neuer Kurs',a:6},{l:'Spitzenausgleich',a:4.2}],
+  ex:'47 ÷ 10 = 4 ganze neue Aktien, Rest 7 alte Aktien. Neuer Kurs: 0,60 € × 10 = 6,00 €. Spitzenausgleich: 7 × 0,60 € = 4,20 €. Spannend: Mit 6 € ist die Aktie kein Penny Stock mehr und wieder kaufbar!',hint:'Wie viele ganze Zehnerpakete stecken in 47? Der Rest wird in Euro ausgeglichen.'});
+ mc('#t-m6-orders',{id:'m6-orders',mod:'m6',q:'Du hast für NordTech eine Stop-Loss-Order bei 110 € laufen. Dann wird ein Aktiensplit durchgeführt. Was passiert mit deiner Order?',o:['Sie wird automatisch auf 27,50 € angepasst.','Sie bleibt unverändert bestehen.','Sie wird gebührenfrei gelöscht – du musst sie neu erteilen.','Sie wird sofort ausgeführt.'],a:2,
+  ex:'Bei Splits, Dividenden und anderen besonderen Ereignissen werden offene Orders mit Limit oder Stop gelöscht – gebührenfrei. Denk daran, dein Sicherheitsnetz danach neu zu setzen!'});
+
+ num('#t-m7-dgw',{id:'m7-dgw',mod:'m7',q:'Ein Team hat Wertpapiere mit einem Kurswert von <b>38.200 €</b>, ein Restkapital von <b>12.150 €</b> und aufgelaufene Stückzinsen von <b>45 €</b>. Wie hoch ist der Depotgesamtwert – und wie viel Prozent Gewinn ist das gegenüber dem Startkapital?',
+  f:[{l:'Depotgesamtwert',a:50395},{l:'Gewinn in %',a:0.79,u:'%',tol:0.011}],
+  ex:'38.200 + 12.150 + 45 = 50.395 €. Gewinn: 395 € von 50.000 € = 0,79 %.'});
+ mc('#t-m7-nh',{id:'m7-nh',mod:'m7',q:'Was zählt für den Nachhaltigkeitsertrag?',o:['Der gesamte Depotwert, wenn mindestens ein nachhaltiges Wertpapier im Depot ist.','Die Kursgewinne und -verluste aller gehandelten nachhaltigen Wertpapiere.','Die Anzahl der gekauften nachhaltigen Wertpapiere.','Nur die Dividenden nachhaltiger Aktien.'],a:1,
+  ex:'Entscheidend sind die aufsummierten Kursgewinne und -verluste aller im Depot gehandelten nachhaltigen Wertpapiere – erkennbar am blau-grünen Symbol.'});
+ mc('#t-m7-prize',{id:'m7-prize',mod:'m7',q:'Team „Bullenstark“ belegt deutschlandweit Platz 2 in der Depotgesamtwertung und Platz 1 in der Nachhaltigkeitsbewertung. Was passiert?',o:['Es bekommt beide Preise.','Es bekommt den Preis für Platz 1 in der Nachhaltigkeit; in der Depotgesamtwertung rückt das nächste Team nach.','Es bekommt den Preis für die Depotgesamtwertung, weil diese wichtiger ist.','Es darf sich einen Preis aussuchen.'],a:1,
+  ex:'Ein Team erhält nur einen Preis – in der Wertung mit der besseren Platzierung. In der anderen Wertung rückt das nächstbeste Team nach.'});
+ mc('#t-m7-tie',{id:'m7-tie',mod:'m7',q:'Zwei Teams haben exakt den gleichen Depotgesamtwert. Wer liegt vorne?',o:['Das Team, das sich früher registriert hat.','Das Team mit dem höheren Nachhaltigkeitsertrag.','Das Team mit mehr Kaufaufträgen.','Es gibt zwei Sieger.'],a:1,
+  ex:'Bei gleichem Depotgesamtwert gewinnt das Depot mit dem höheren Nachhaltigkeitsertrag. Wurden keine nachhaltigen Wertpapiere gehandelt, gewinnt das Depot mit weniger abgerechneten Kaufaufträgen.'});
+
+ scen('#sc-limit',{title:'Situation 1: Limit-Kauf',label:'Brief',kind:'limitBuy',lvl:24.80,ticks:[25.40,24.90,24.60,25.10,25.80],
+  txt:'Du willst die Aktie kaufen, aber höchstens <span class="lvl">Limit 24,80 €</span> zahlen. Das sind die nächsten Briefkurse:'});
+ scen('#sc-stoploss',{title:'Situation 2: Stop-Loss',label:'Geld',kind:'stopLoss',lvl:29.00,ticks:[30.10,29.50,28.90,28.40,29.20],
+  txt:'Du besitzt Aktien und willst Verluste begrenzen: <span class="lvl">Stop-Loss 29,00 €</span>. Das sind die nächsten Geldkurse:'});
+ scen('#sc-stopbuy',{title:'Situation 3: Stop-Buy',label:'Brief',kind:'stopBuy',lvl:12.50,ticks:[12.00,12.30,12.55,12.80,13.10],
+  txt:'Du willst erst einsteigen, wenn die Aktie richtig anzieht: <span class="lvl">Stop-Buy 12,50 €</span>. Das sind die nächsten Briefkurse:'});
+}
+
+/* ===================== Simulator ===================== */
+const BASE=[
+ {id:'ALP',n:'Alpenstrom AG',t:'Aktie',m:42.54,nh:true,v:.022},
+ {id:'NTC',n:'NordTech AG',t:'Aktie',m:118.25,v:.028},
+ {id:'BRZ',n:'Brezelwerk AG',t:'Aktie',m:27.30,v:.016},
+ {id:'MMN',n:'Minimal Mining AG',t:'Aktie',m:0.61,v:.045},
+ {id:'WNE',n:'Welt-Nachhaltig ETF',t:'ETF',m:63.12,nh:true,v:.011},
+ {id:'ANL',n:'3 % Musteranleihe 2030',t:'Anleihe',m:98.40,v:.002,cp:3,days:73}
+];
+const EVENTS=[
+ {day:3,sid:'BRZ',type:'div',amt:1.10,txt:'Tag 3: Brezelwerk – Dividende 1,10 €'},
+ {day:5,sid:'NTC',type:'split',r:3,txt:'Tag 5: NordTech – Split 1:3'},
+ {day:7,sid:'MMN',type:'rsplit',r:10,txt:'Tag 7: Minimal Mining – Reverse Split 10:1'}
+];
+const MISSIONS=[
+ {id:'px-buy1',t:'Erster Kauf',d:'Kaufe ein Wertpapier „billigst“.',pts:10},
+ {id:'px-buy3',t:'Qualifiziert!',d:'Erreiche 3 abgerechnete Kaufaufträge.',pts:15},
+ {id:'px-nh',t:'Grün investiert',d:'Kaufe ein nachhaltiges Wertpapier.',pts:10},
+ {id:'px-limit',t:'Preis im Griff',d:'Gib eine Limit-Order auf.',pts:10},
+ {id:'px-stop',t:'Sicherheitsnetz',d:'Setze eine Stop-Loss-Order für eine Position.',pts:10},
+ {id:'px-20',t:'Regel-Detektiv',d:'Teste die 20-%-Grenze mit einem zu großen Kauf.',pts:10},
+ {id:'px-penny',t:'Penny-Falle',d:'Versuche, den Penny Stock unter 1 € zu kaufen.',pts:10},
+ {id:'px-bond',t:'Festverzinslich',d:'Kaufe die Musteranleihe.',pts:10},
+ {id:'px-event',t:'Ereignis erlebt',d:'Halte ein Wertpapier, wenn ein Ereignis eintritt.',pts:15}
+];
+MISSIONS.forEach(m=>reg(m.id,m.pts,'px'));
+let SIM;
+function initSim(){SIM={day:1,cash:50000,hold:{},orders:[],log:[],buys:0,nhReal:0,cnt:{},oid:1,secs:BASE.map(s=>({...s,prev:s.m}))};
+  logp('Willkommen! Du startest mit 50.000 € virtuellem Startkapital.','');}
+const sec=id=>SIM.secs.find(s=>s.id===id);
+const isB=s=>s.t==='Anleihe';
+function ask(s){return isB(s)?r2(s.m+.1):r2(s.m+Math.max(.01,s.m*.0015));}
+function bid(s){return isB(s)?r2(s.m-.1):r2(Math.max(.01,s.m-Math.max(.01,s.m*.0015)));}
+const valOf=(s,q,p)=>isB(s)?r2(q*p/100):r2(q*p);
+const accr=(s,q)=>isB(s)?r2(q*s.cp/100*s.days/365):0;
+const fee=kw=>r2(Math.max(15,kw*.003));
+function holdVal(id){const h=SIM.hold[id],s=sec(id);return valOf(s,h.q,bid(s))+accr(s,h.q);}
+function dgw(){let v=SIM.cash;for(const id in SIM.hold)v+=holdVal(id);return r2(v);}
+function nhErtrag(){let v=SIM.nhReal;for(const id in SIM.hold){const s=sec(id);if(s.nh){const h=SIM.hold[id];v+=valOf(s,h.q,bid(s))-h.cost;}}return r2(v);}
+function logp(txt,cls){SIM.log.unshift({d:SIM.day,txt,cls});if(SIM.log.length>60)SIM.log.pop();}
+function mission(id){if(!S.res[id]){const m=MISSIONS.find(x=>x.id===id);award(id,m.pts);renderMissions();}}
+
+function execute(o,auto){const s=sec(o.sid);
+  if(o.side==='buy'){if(!isB(s)&&ask(s)<1)return false;
+    const px=ask(s),kw=valOf(s,o.qty,px),f=fee(kw),ac=accr(s,o.qty),tot=r2(kw+f+ac);
+    if(tot>SIM.cash+1e-9){logp(`❌ Kauf ${s.n} abgelehnt – das Konto würde überzogen (${eur(tot)} benötigt).`,'neg');return 'rej';}
+    SIM.cash=r2(SIM.cash-tot);const h=SIM.hold[o.sid]||(SIM.hold[o.sid]={q:0,cost:0});h.q+=o.qty;h.cost=r2(h.cost+kw);SIM.buys++;
+    logp(`✅ KAUF ${isB(s)?eur(o.qty)+' nom.':o.qty+' Stk.'} ${s.n} zu ${isB(s)?fmt(px)+' %':eur(px)} · Kurswert ${eur(kw)} · Gebühr ${eur(f)}${ac?' · Stückzinsen '+eur(ac):''} · <b>Belastung ${eur(tot)}</b>${auto?' ('+auto+')':''}`,'pos');
+    mission('px-buy1');if(SIM.buys>=3)mission('px-buy3');if(s.nh)mission('px-nh');if(isB(s))mission('px-bond');}
+  else{const h=SIM.hold[o.sid];if(!h||h.q<o.qty){logp(`❌ Verkauf ${s.n} abgelehnt – größer als Depotbestand.`,'neg');return 'rej';}
+    const px=bid(s),kw=valOf(s,o.qty,px),f=fee(kw),ac=accr(s,o.qty),net=r2(kw-f+ac);const basis=r2(h.cost*o.qty/h.q);
+    if(s.nh)SIM.nhReal=r2(SIM.nhReal+kw-basis);
+    SIM.cash=r2(SIM.cash+net);h.cost=r2(h.cost-basis);h.q-=o.qty;if(h.q<=0)delete SIM.hold[o.sid];
+    logp(`✅ VERKAUF ${isB(s)?eur(o.qty)+' nom.':o.qty+' Stk.'} ${s.n} zu ${isB(s)?fmt(px)+' %':eur(px)} · Kurswert ${eur(kw)} · Gebühr ${eur(f)}${ac?' · Stückzinsen '+eur(ac):''} · <b>Gutschrift ${eur(net)}</b>${auto?' ('+auto+')':''}`,'pos');}
+  return true;}
+
+function simMsg(html,cls){$('#omsg').innerHTML=`<div class="fb show ${cls}">${html}</div>`;}
+function placeOrder(){const sid=$('#oSec').value,s=sec(sid),side=OF.side,type=$('#oType').value,val=$('#oVal').value;
+  const qty=parseDE($('#oQty').value),lim=parseDE($('#oPx').value);
+  if(!(qty>0))return simMsg(isB(s)?'Gib einen Nennwert ein.':'Gib eine Stückzahl ein.','warn');
+  if(isB(s)&&qty%1000!==0)return simMsg('Bei Anleihen gibst du den Nennwert in 1.000-€-Schritten an.','warn');
+  if(!isB(s)&&!Number.isInteger(qty))return simMsg('Die Stückzahl muss eine ganze Zahl sein.','warn');
+  if(type!=='mkt'&&!(lim>0))return simMsg(`Gib ${type==='lim'?'ein Limit':'eine Stop-Marke'} ein${isB(s)?' (in %)':''}.`,'warn');
+  if(type==='stop'&&side==='sell'&&lim>=bid(s))return simMsg('Eine Stop-Loss-Marke muss unter dem aktuellen Geldkurs liegen – sonst würde sie sofort auslösen.','warn');
+  if(type==='stop'&&side==='buy'&&lim<=ask(s))return simMsg('Eine Stop-Buy-Marke muss über dem aktuellen Briefkurs liegen.','warn');
+  const c=SIM.cnt[sid]||0;if(c>=5)return simMsg('<b>Abgelehnt:</b> Für ein Wertpapier sind höchstens fünf Orders pro Tag erlaubt.','bad');
+  if(side==='sell'){const held=SIM.hold[sid]?SIM.hold[sid].q:0,open=SIM.orders.filter(o=>o.sid===sid&&o.side==='sell').reduce((a,o)=>a+o.qty,0);
+    if(qty>held-open)return simMsg(`<b>Abgelehnt:</b> Der Auftrag ist größer als dein (freier) Depotbestand (${held-open} ${isB(s)?'€ nom.':'Stk.'}).`,'bad');}
+  else{const est=valOf(s,qty,ask(s)),have=SIM.hold[sid]?holdVal(sid):0,openB=SIM.orders.filter(o=>o.sid===sid&&o.side==='buy').reduce((a,o)=>a+valOf(s,o.qty,ask(s)),0),limit20=dgw()*.2;
+    if(have+openB+est>limit20+.005){mission('px-20');return simMsg(`<b>Abgelehnt – 20-%-Grenze!</b> Bestand ${eur(have)} + offene Käufe ${eur(openB)} + neuer Auftrag ${eur(est)} = ${eur(have+openB+est)}. Erlaubt sind höchstens 20 % von ${eur(dgw())} = <b>${eur(limit20)}</b>.`,'bad');}
+    const px=type==='lim'?lim:ask(s),need=valOf(s,qty,px)+fee(valOf(s,qty,px))+accr(s,qty);
+    if(need>SIM.cash)return simMsg(`<b>Abgelehnt:</b> Dafür bräuchtest du ca. ${eur(need)}, du hast aber nur ${eur(SIM.cash)}. Ein Depot kann nicht überzogen werden.`,'bad');}
+  SIM.cnt[sid]=c+1;
+  const o={id:SIM.oid++,sid,side,type,lim:type==='mkt'?null:lim,qty,val,exp:val==='14'?SIM.day+13:SIM.day,trig:false};
+  if(type==='lim')mission('px-limit');if(type==='stop'&&side==='sell')mission('px-stop');
+  if(type==='mkt'){if(side==='buy'&&!isB(s)&&ask(s)<1){SIM.orders.push(o);mission('px-penny');logp(`⏳ Kauforder ${s.n} angenommen – wird aber nicht ausgeführt, solange der Kurs unter 1,00 € liegt (Penny-Stock-Regel).`,'');
+      simMsg('<b>Penny-Stock-Regel:</b> Der Auftrag wurde angenommen, wird aber nicht ausgeführt, solange der Kurs unter 1,00 € liegt.','warn');}
+    else{const r=execute(o);simMsg(r===true?'Auftrag ausgeführt – siehe Abrechnung rechts.':'Auftrag abgelehnt – siehe Protokoll.',r===true?'good':'bad');}}
+  else if(type==='lim'&&((side==='buy'&&ask(s)<=lim&&(isB(s)||ask(s)>=1))||(side==='sell'&&bid(s)>=lim))){execute(o,'Limit sofort erreicht');simMsg('Das Limit war sofort erreicht – Auftrag ausgeführt.','good');}
+  else{SIM.orders.push(o);logp(`📝 ${side==='buy'?'Kauf':'Verkauf'}order ${s.n} (${type==='lim'?'Limit '+fmtPx(s,lim):'Stop '+fmtPx(s,lim)}, ${val==='14'?'14 Tage':'nur heute'}) eingestellt.`,'');
+    simMsg('Order eingestellt. Sie wird geprüft, sobald sich der Kurs ändert („Nächster Börsentag“).','info');}
+  renderSim();}
+const fmtPx=(s,p)=>isB(s)?fmt(p)+' %':eur(p);
+
+function cancelOrder(id){const o=SIM.orders.find(x=>x.id===id);if(!o)return;if(SIM.cash<2.5)return;SIM.cash=r2(SIM.cash-2.5);SIM.orders=SIM.orders.filter(x=>x.id!==id);
+  logp(`🗑 Order ${sec(o.sid).n} gelöscht – Gebühr 2,50 €.`,'neg');renderSim();}
+
+function nextDay(){SIM.day++;SIM.cnt={};
+  SIM.orders=SIM.orders.filter(o=>{if(o.exp<SIM.day){logp(`⌛ Order ${sec(o.sid).n} – Laufzeitende, gebührenfrei gestrichen.`,'');return false;}return true;});
+  EVENTS.filter(e=>e.day===SIM.day).forEach(e=>{const s=sec(e.sid),h=SIM.hold[e.sid];
+    const del=SIM.orders.filter(o=>o.sid===e.sid&&o.type!=='mkt');if(del.length){SIM.orders=SIM.orders.filter(o=>!(o.sid===e.sid&&o.type!=='mkt'));logp(`🧹 ${del.length} offene Limit/Stop-Order(s) für ${s.n} wegen des Ereignisses gebührenfrei gelöscht.`,'');}
+    if(e.type==='div'){if(h){const g=r2(h.q*e.amt);SIM.cash=r2(SIM.cash+g);logp(`💶 Dividende ${s.n}: ${h.q} × ${eur(e.amt)} = <b>${eur(g)}</b> gutgeschrieben.`,'pos');mission('px-event');}else logp(`📅 ${s.n} notiert ex Dividende (${eur(e.amt)}). Du hattest keine Aktien im Depot.`,'');s.m=Math.max(.05,s.m-e.amt);s.prev=Math.max(.05,s.prev-e.amt);}
+    if(e.type==='split'){if(h){const old=h.q;h.q*=e.r;logp(`✂️ Split ${s.n} 1:${e.r}: Aus ${old} Aktien werden <b>${h.q}</b>, der Kurs wird gedrittelt.`,'pos');mission('px-event');}else logp(`📅 ${s.n}: Aktiensplit 1:${e.r}. Kurs wird gedrittelt.`,'');s.m/=e.r;s.prev/=e.r;}
+    if(e.type==='rsplit'){if(h){const old=h.q,b=bid(s),nq=Math.floor(old/e.r),rest=old%e.r,sp=r2(rest*b);h.cost=nq?r2(h.cost*nq*e.r/old):0;h.q=nq;SIM.cash=r2(SIM.cash+sp);if(!nq)delete SIM.hold[e.sid];
+        logp(`🔁 Reverse Split ${s.n} ${e.r}:1: Aus ${old} Aktien werden <b>${nq}</b>. Spitzenausgleich für ${rest} Aktien: <b>${eur(sp)}</b>.`,'pos');mission('px-event');}else logp(`📅 ${s.n}: Reverse Split ${e.r}:1 – der Kurs liegt jetzt über 1 €.`,'');s.m*=e.r;s.prev*=e.r;}});
+  SIM.secs.forEach(s=>{s.prev=s.m;s.m=Math.max(.05,s.m*(1+gauss()*s.v+.0012));if(isB(s))s.days++;s.m=Math.round(s.m*10000)/10000;});
+  [...SIM.orders].forEach(o=>{const s=sec(o.sid);let go=false,why='';
+    if(o.type==='mkt'){go=o.side==='sell'||isB(s)||ask(s)>=1;why='Kurs wieder über 1 €';}
+    else if(o.type==='lim'){go=o.side==='buy'?(ask(s)<=o.lim&&(isB(s)||ask(s)>=1)):bid(s)>=o.lim;why='Limit erreicht';}
+    else{const hit=o.side==='buy'?ask(s)>=o.lim:bid(s)<=o.lim;if(hit){logp(`⚡ ${o.side==='buy'?'Stop-Buy':'Stop-Loss'} ${s.n} bei ${fmtPx(s,o.lim)} ausgelöst → unlimitierter Auftrag, Abrechnung zum nächsten Kurs.`,'');s.m=Math.max(.05,s.m*(1+gauss()*s.v*.4));go=true;why='Stop ausgelöst';}}
+    if(go){const r=execute(o,why);if(r!==false)SIM.orders=SIM.orders.filter(x=>x.id!==o.id);}});
+  renderSim();toast('Börsentag '+SIM.day);}
+
+/* Order form */
+const OF={side:'buy'};
+function buildForm(){$('#oform').innerHTML=`<div class="seg" style="margin-bottom:10px"><button class="buy on" data-s="buy">Kaufen</button><button class="sell" data-s="sell">Verkaufen</button></div>
+ <div class="oform"><label>Wertpapier<select class="plain" id="oSec">${SIM.secs.map(s=>`<option value="${s.id}">${s.n}</option>`).join('')}</select></label>
+ <label><span id="oQl">Stückzahl</span><input class="plain" id="oQty" inputmode="decimal" placeholder="z. B. 50"></label>
+ <label>Ordertyp<select class="plain" id="oType"><option value="mkt">billigst / bestens</option><option value="lim">Limit</option><option value="stop">Stop (Stop-Buy / Stop-Loss)</option></select></label>
+ <label><span id="oPl">Limit / Stop</span><input class="plain" id="oPx" inputmode="decimal" disabled placeholder="nur bei Limit/Stop"></label>
+ <label>Gültigkeit<select class="plain" id="oVal"><option value="day">nur heute</option><option value="14">14 Kalendertage</option></select></label>
+ <label style="justify-content:flex-end"><button class="btn primary" id="oGo">Order aufgeben</button></label></div>
+ <div class="preview" id="oPrev"></div><div class="msg" id="omsg"></div>`;
+  $$('#oform .seg button').forEach(b=>b.onclick=()=>{OF.side=b.dataset.s;$$('#oform .seg button').forEach(x=>x.classList.toggle('on',x===b));prev();});
+  ['oSec','oQty','oType','oPx','oVal'].forEach(id=>$('#'+id).addEventListener('input',prev));
+  $('#oGo').onclick=placeOrder;prev();}
+function prev(){if(!$('#oSec'))return;const s=sec($('#oSec').value),t=$('#oType').value;$('#oPx').disabled=t==='mkt';
+  $('#oQl').textContent=isB(s)?'Nennwert in €':'Stückzahl';$('#oPl').textContent=(t==='stop'?(OF.side==='buy'?'Stop-Buy-Marke':'Stop-Loss-Marke'):'Limit')+(isB(s)?' in %':' in €');
+  $('#oVal').disabled=t==='mkt';$('#oGo').textContent=OF.side==='buy'?'Kauforder aufgeben':'Verkaufsorder aufgeben';
+  const q=parseDE($('#oQty').value);if(!(q>0)){$('#oPrev').innerHTML=`<span class="small">Aktuell: Geld ${fmtPx(s,bid(s))} · Brief ${fmtPx(s,ask(s))}</span>`;return;}
+  const px=t==='lim'&&parseDE($('#oPx').value)>0?parseDE($('#oPx').value):(OF.side==='buy'?ask(s):bid(s));
+  const kw=valOf(s,q,px),f=fee(kw),ac=accr(s,q),tot=OF.side==='buy'?kw+f+ac:kw-f+ac,share=OF.side==='buy'?((SIM.hold[s.id]?holdVal(s.id):0)+kw)/dgw()*100:null;
+  $('#oPrev').innerHTML=`<div class="ln"><span>Kurswert (zu ${fmtPx(s,px)})</span><b>${eur(kw)}</b></div><div class="ln"><span>Gebühr</span><span>${eur(f)}</span></div>${ac?`<div class="ln"><span>Stückzinsen</span><span>${eur(ac)}</span></div>`:''}<div class="ln"><span>${OF.side==='buy'?'Voraussichtliche Belastung':'Voraussichtliche Gutschrift'}</span><b>${eur(tot)}</b></div>${share!==null?`<div class="ln"><span>Anteil am Depot danach</span><span class="${share>20?'neg':''}">${fmt(share,1)} % ${share>20?'– über 20 %!':''}</span></div>`:''}`;}
+
+function renderSim(){if(!SIM)return;const d=dgw(),perf=(d/50000-1)*100,nh=nhErtrag();
+  $('#simKpis').innerHTML=`<div class="kpi"><b>${SIM.day}</b><span>Börsentag</span></div><div class="kpi"><b>${eur(SIM.cash)}</b><span>Kontostand</span></div><div class="kpi"><b>${eur(d)}</b><span>Depotgesamtwert</span></div><div class="kpi"><b class="${perf>=0?'pos':'neg'}">${perf>=0?'+':''}${fmt(perf)} %</b><span>Performance</span></div><div class="kpi"><b class="${nh>=0?'pos':'neg'}">${eur(nh)}</b><span>Nachhaltigkeitsertrag <span class="nh"></span></span></div><div class="kpi"><b>${Math.min(SIM.buys,3)} / 3</b><span>${SIM.buys>=3?'✓ qualifiziert':'Käufe zur Qualifikation'}</span></div>`;
+  $('#evcal').innerHTML=EVENTS.map(e=>`<span class="${e.day<=SIM.day?'past':''}">📅 ${e.txt}</span>`).join('');
+  $('#mkt').innerHTML='<tr><th>Wertpapier</th><th class="r">Geld</th><th class="r">Brief</th><th class="r">±</th><th></th></tr>'+SIM.secs.map(s=>{const ch=(s.m/s.prev-1)*100;
+    return `<tr><td><b>${s.n}</b>${s.nh?'<span class="nh" title="nachhaltig"></span>':''}<br><span class="small">${s.t}${isB(s)?' · Kurs in %':''}${!isB(s)&&ask(s)<1?' · <span class="neg">Penny Stock</span>':''}</span></td><td class="r">${isB(s)?fmt(bid(s))+' %':fmt(bid(s))}</td><td class="r">${isB(s)?fmt(ask(s))+' %':fmt(ask(s))}</td><td class="r ${ch>=0?'pos':'neg'}">${SIM.day>1?(ch>=0?'+':'')+fmt(ch,1)+' %':'–'}</td><td><button class="btn sm" onclick="pickSec('${s.id}')">Handeln</button></td></tr>`;}).join('');
+  const H=Object.keys(SIM.hold);
+  $('#depot').innerHTML=H.length?`<table class="tbl"><tr><th>Position</th><th class="r">Bestand</th><th class="r">Wert</th><th class="r">G/V</th><th class="r">Anteil</th></tr>${H.map(id=>{const s=sec(id),h=SIM.hold[id],w=holdVal(id),gv=valOf(s,h.q,bid(s))-h.cost;
+    return `<tr><td>${s.n}${s.nh?'<span class="nh"></span>':''}</td><td class="r">${isB(s)?fmt(h.q,0)+' € nom.':h.q}</td><td class="r">${eur(w)}</td><td class="r ${gv>=0?'pos':'neg'}">${eur(gv)}</td><td class="r">${fmt(w/d*100,1)} %</td></tr>`;}).join('')}</table>`:'<p class="small">Noch keine Wertpapiere im Depot. Starte mit einem Kauf!</p>';
+  $('#open').innerHTML=SIM.orders.length?`<table class="tbl"><tr><th>Order</th><th class="r">Menge</th><th>Bedingung</th><th>gültig bis</th><th></th></tr>${SIM.orders.map(o=>{const s=sec(o.sid);
+    return `<tr><td><span class="pill ${o.side==='buy'?'g':'r'}">${o.side==='buy'?'Kauf':'Verkauf'}</span> ${s.n}</td><td class="r">${isB(s)?fmt(o.qty,0)+' €':o.qty}</td><td>${o.type==='mkt'?'billigst (Penny)':o.type==='lim'?'Limit '+fmtPx(s,o.lim):(o.side==='buy'?'Stop-Buy ':'Stop-Loss ')+fmtPx(s,o.lim)}</td><td>Tag ${o.exp}</td><td><button class="btn sm" onclick="cancelOrder(${o.id})" title="Kostet 2,50 €">Löschen</button></td></tr>`;}).join('')}</table><p class="small">Eigenes Löschen kostet 2,50 €.</p>`:'<p class="small">Keine offenen Aufträge.</p>';
+  $('#log').innerHTML=SIM.log.map(l=>`<div><span class="d">Tag ${l.d}</span>${l.txt}</div>`).join('');
+  renderMissions();prev();}
+function pickSec(id){$('#oSec').value=id;prev();$('#oQty').focus();}
+function renderMissions(){$('#missions').innerHTML=MISSIONS.map(m=>`<div class="mis ${S.res[m.id]?'done':''}"><b>${m.t}</b>${m.d}<br><span class="small">${m.pts} P</span></div>`).join('');}
+
+/* ===================== Final test ===================== */
+const TEST=[
+ {q:'Wie viel virtuelles Startkapital hat jedes Depot?',o:['10.000 €','25.000 €','50.000 €','100.000 €'],a:2,ex:'Jedes Depot startet mit 50.000 € virtuellem Guthaben.'},
+ {q:'Welches Depot wird im Wettbewerb gewertet?',o:['Das Trainingsdepot','Das Wettbewerbsdepot','Beide zusammen','Das bessere von beiden'],a:1,ex:'Nur das Wettbewerbsdepot wird gewertet.'},
+ {q:'Zu welchem Kurs wird ein Kauf „billigst“ abgerechnet?',o:['Zum Geldkurs (Bid)','Zum Briefkurs (Ask)','Zum Eröffnungskurs','Zum Durchschnittskurs des Tages'],a:1,ex:'Käufe werden zum Briefkurs abgerechnet, Verkäufe zum Geldkurs.'},
+ {q:'Du kaufst Aktien mit einem Kurswert von 2.000 €. Wie hoch ist die Gebühr?',o:['6,00 €','2,50 €','15,00 €','0 €'],a:2,ex:'0,3 % wären 6 € – es gilt aber die Mindestgebühr von 15 €.'},
+ {q:'Wie viel Prozent des Depotgesamtwerts darf höchstens in ein einzelnes Wertpapier fließen?',o:['10 %','20 %','25 %','50 %'],a:1,ex:'Maximal 20 % – inklusive Bestand und offener Kaufaufträge.'},
+ {q:'Was braucht euer Team, um nicht wegen Passivität disqualifiziert zu werden?',o:['Mindestens 3 abgerechnete Kaufaufträge bis zum Stichtag','Mindestens 10 Aufträge insgesamt','Einen Gewinn von mindestens 1 %','Mindestens ein nachhaltiges Wertpapier'],a:0,ex:'Drei abgerechnete Kaufaufträge bis zum Stichtag (Spielrunde 2025/26: 25. Januar 2026).'},
+ {q:'Deine Stop-Loss-Marke liegt bei 50 €. Der Kurs fällt auf 49,80 €. Was passiert?',o:['Die Aktie wird garantiert zu 50 € verkauft.','Die Order wird zu einem Verkauf „bestens“ und zum nächsten Kurs abgerechnet.','Die Order wird gelöscht.','Nichts – erst unter 49 € passiert etwas.'],a:1,ex:'Der Stop löst aus, daraus wird ein unlimitierter Verkaufsauftrag, abgerechnet zum nächsten Kurs.'},
+ {q:'Eine Aktie kostet 0,80 €. Was gilt im Spiel?',o:['Kaufen und verkaufen ist normal möglich.','Kaufaufträge werden angenommen, aber nicht ausgeführt – verkaufen geht.','Die Aktie ist komplett gesperrt.','Man kann nur maximal 100 Stück kaufen.'],a:1,ex:'Penny-Stock-Regel: Unter 1,00 € wird nicht gekauft, verkaufen ist möglich.'},
+ {q:'Wann bekommst du eine Dividende gutgeschrieben?',o:['Wenn die Aktie am Börsentag vor dem Ex-Tag in deinem Depot lag.','Wenn du die Aktie am Ex-Tag kaufst.','Nur am Ende der Spielrunde.','Dividenden gibt es im Spiel nicht.'],a:0,ex:'Entscheidend ist der Bestand am Börsentag vor dem Ereignis.'},
+ {q:'Was passiert mit offenen Limit- und Stop-Orders bei einem Aktiensplit?',o:['Sie werden automatisch angepasst.','Sie werden gebührenfrei gelöscht.','Sie werden sofort ausgeführt.','Sie werden gegen 2,50 € gelöscht.'],a:1,ex:'Bei besonderen Ereignissen werden offene Limit-/Stop-Orders gebührenfrei gelöscht.'},
+ {q:'Wo kannst du mit Kryptowährungen handeln?',o:['Im Wettbewerbsdepot','Im Trainingsdepot','In beiden Depots','Gar nicht'],a:1,ex:'Kryptowährungen und Zertifikate sind nur im Trainingsdepot handelbar.'},
+ {q:'Was zählt für die Nachhaltigkeitsbewertung?',o:['Wie viele nachhaltige Wertpapiere man besitzt','Die Kursgewinne und -verluste aller gehandelten nachhaltigen Wertpapiere','Der gesamte Depotwert','Die Anzahl der Aufträge'],a:1,ex:'Entscheidend ist der Nachhaltigkeitsertrag.'},
+ {q:'Du willst 200 Aktien kaufen, es werden aber nur 120 angeboten. Was passiert?',o:['Du bekommst 120 Aktien.','Der Auftrag wird nicht (teil-)ausgeführt – nur ganz oder gar nicht.','Du bekommst 200 Aktien zu einem höheren Preis.','Die restlichen 80 werden am nächsten Tag geliefert.'],a:1,ex:'Aufträge werden immer vollständig ausgeführt – keine Teilausführung.'},
+ {q:'Was kostet es, einen offenen Auftrag selbst zu löschen?',o:['Nichts','2,50 €','15,00 €','0,3 % vom Kurswert'],a:1,ex:'Eigenes Löschen kostet 2,50 €. Streichungen durch Laufzeitende oder Ereignisse sind kostenlos.'}
+];
+function renderTest(){const box=$('#testBox');const sub=S.test;
+  box.innerHTML=TEST.map((t,i)=>`<div class="task ${sub?(sub.ans[i]===t.a?'solved':''):''}" id="tq${i}"><div class="task-h"><span class="tag">Frage ${i+1} von ${TEST.length}</span><span class="pts">5 P</span></div><p class="q">${t.q}</p><div class="opts">${t.o.map((o,j)=>`<button class="opt" data-q="${i}" data-j="${j}">${o}</button>`).join('')}</div><div class="fb"></div></div>`).join('');
+  const ans=sub?[...sub.ans]:Array(TEST.length).fill(null);
+  const paint=()=>{TEST.forEach((t,i)=>{$$(`#tq${i} .opt`).forEach(b=>{const j=+b.dataset.j;b.classList.remove('ok','bad');b.style.borderColor='';b.style.background='';
+      if(sub){b.disabled=true;if(j===t.a)b.classList.add('ok');else if(j===ans[i])b.classList.add('bad');}
+      else if(ans[i]===j){b.style.borderColor='var(--blu)';b.style.background='var(--blu-s)';}});
+    if(sub){const fb=$(`#tq${i} .fb`);fb.className='fb show '+(ans[i]===t.a?'good':'bad');fb.innerHTML=(ans[i]===t.a?'<b>Richtig.</b> ':'<b>Leider falsch.</b> ')+t.ex;}});};
+  $$('#testBox .opt').forEach(b=>b.onclick=()=>{if(S.test)return;ans[+b.dataset.q]=+b.dataset.j;paint();});
+  paint();
+  $('#testSubmit').hidden=!!sub;$('#testRetry').hidden=!sub;$('#toEval').hidden=!sub;
+  if(sub){const fb=$('#testFb');fb.className='fb show '+(sub.score>=10?'good':'info');fb.innerHTML=`<b>${sub.score} von ${TEST.length} Fragen richtig</b> (${sub.score*5} Punkte). Schau dir jetzt deine Auswertung an!`;}
+  else $('#testFb').className='fb';
+  $('#testSubmit').onclick=()=>{const miss=ans.filter(a=>a===null).length;if(miss){const fb=$('#testFb');fb.className='fb show warn';fb.innerHTML=`Du hast noch ${miss} Frage(n) nicht beantwortet.`;return;}
+    S.test={ans,score:ans.filter((a,i)=>a===TEST[i].a).length};save();updateHUD();renderTest();toast(`Test: ${S.test.score}/${TEST.length}`);window.scrollTo({top:0,behavior:'smooth'});};
+  $('#testRetry').onclick=()=>{S.test=null;save();updateHUD();renderTest();window.scrollTo({top:0,behavior:'smooth'});};}
+
+/* ===================== Evaluation ===================== */
+const COMP={m1:'Du weißt, wie ein Kurs entsteht und was Geld- und Briefkurs bedeuten.',m2:'Du kannst eine Wertpapierabrechnung inklusive Gebühren berechnen.',m3:'Du setzt Limit-, Stop-Loss- und Stop-Buy-Orders gezielt ein.',m4:'Du kennst die Spielregeln – von der 20-%-Grenze bis zur Qualifikation.',m5:'Du unterscheidest Aktien, Fonds, ETFs und Anleihen.',m6:'Du verstehst Dividenden, Splits und andere besondere Ereignisse.',m7:'Du weißt, wie gewertet wird und was es zu gewinnen gibt.',px:'Du hast im Übungsdepot echte Handelspraxis gesammelt.'};
+function renderEval(){const t=totals(),pc=Math.round(t.p/t.m*100);
+  const lv=pc>=85?['Börsen-Profi','🏆','Stark! Du kennst die Spielregeln besser als die meisten. Dein Team kann sich auf dich verlassen – jetzt fehlt nur noch die richtige Strategie.']:
+    pc>=65?['Börsen-Fortgeschrittene:r','🚀','Sehr gut! Du hast die wichtigsten Regeln verstanden. Mit dem Trainingsdepot kannst du im Spiel den Rest ganz entspannt ausprobieren.']:
+    pc>=40?['Börsen-Starter:in','📈','Guter Start! Du hast schon einiges gelernt. Schau dir die gelb oder rot markierten Module noch einmal an – dann bist du bestens vorbereitet.']:
+    ['Börsen-Neuling','🌱','Jeder fängt mal an! Arbeite die Module in Ruhe durch und probiere das Übungsdepot aus. Im echten Spiel hilft dir das Trainingsdepot beim Üben.'];
+  const mods=['m1','m2','m3','m4','m5','m6','m7','px'];
+  const bars=mods.map(m=>{const s=modStat(m),r=s.m?s.p/s.m:0;return `<div class="mbar"><span>${MODNAMES[m]}</span><div class="track"><i class="${r>=.65?'':r>=.4?'mid':'low'}" style="width:${Math.round(r*100)}%"></i></div><b style="text-align:right">${Math.round(r*100)} %</b></div>`;}).join('')+
+    `<div class="mbar"><span>Abschlusstest</span><div class="track"><i class="${!S.test?'low':S.test.score>=10?'':S.test.score>=6?'mid':'low'}" style="width:${S.test?Math.round(S.test.score/TEST.length*100):0}%"></i></div><b style="text-align:right">${S.test?Math.round(S.test.score/TEST.length*100):0} %</b></div>`;
+  const comps=mods.map(m=>{const s=modStat(m),ok=s.m&&s.p/s.m>=.5;return `<div class="comp ${ok?'':'no'}"><span class="ic">${ok?'✓':'…'}</span><div>${COMP[m]}${ok?'':` <a href="#" onclick="go('${m}');return false">→ nochmal üben</a>`}</div></div>`;}).join('');
+  const notest=!S.test?`<div class="card tint-y"><b>Tipp:</b> Du hast den Abschlusstest noch nicht gemacht. <a href="#" onclick="go('test');return false">Jetzt zum Test →</a></div>`:'';
+  $('#evalBox').innerHTML=`<div class="ev-hero"><span class="mod-num" style="color:var(--yel)">Deine Auswertung</span><div class="ring" style="--p:${pc}"><div>${pc} %</div></div><h2>${lv[1]} ${lv[0]}</h2><p>${t.p} von ${t.m} möglichen Punkten. ${lv[2]}</p></div>
+  ${notest}
+  <div class="grid2" style="margin-top:18px">
+   <div class="card"><h3>Ergebnis nach Modulen</h3>${bars}</div>
+   <div class="card"><h3>Das kannst du jetzt</h3>${comps}</div>
+  </div>
+  <div class="card tint-g"><h2>Trau dich – das Planspiel wartet auf dich!</h2><p>Du hast jetzt das Handwerkszeug: Du weißt, wie Kurse entstehen, was ein Kauf wirklich kostet, wie du mit Limits und Stops deinen Preis kontrollierst und welche Regeln im Spiel gelten. Das Beste daran: Im Planspiel ist das Geld virtuell – du kannst mutig ausprobieren, aus Fehlern lernen und dabei echtes Wissen für dein späteres Leben sammeln.</p>
+   <h3>So startest du</h3>
+   <ol class="steps">
+    <li><div><b>Team finden:</b> Sucht euch 2 bis 4 Mitspieler:innen.</div></li>
+    <li><div><b>Registrierungscode holen:</b> Den bekommt ihr von eurer Lehrkraft oder der Sparkasse.</div></li>
+    <li><div><b>App laden:</b> Installiert die Planspiel-Börse-App (iOS/Android) oder nutzt die Webversion auf planspiel-boerse.de.</div></li>
+    <li><div><b>Registrieren:</b> Ein Teammitglied startet und lädt die anderen per Link ein. Unter 16? Dann bestätigt ein Elternteil per Link. Gebt eure Daten korrekt an!</div></li>
+    <li><div><b>Drei Käufe machen:</b> So qualifiziert ihr euch und erscheint in den Ranglisten.</div></li>
+   </ol></div>
+  <div class="grid3 mb">
+   <div class="card"><h3>💡 Streuen</h3><p>Verteile dein Geld auf mehrere Wertpapiere und Branchen. Fällt eines, fängt der Rest den Verlust auf. ETFs helfen dabei.</p></div>
+   <div class="card"><h3>💡 Gebühren beachten</h3><p>Unter 5.000 € Kurswert zahlst du immer 15 €. Häufiges Hin- und Herhandeln mit kleinen Beträgen frisst deinen Gewinn.</p></div>
+   <div class="card"><h3>💡 Nachhaltig denken</h3><p>Mit nachhaltigen Wertpapieren <span class="nh"></span> spielst du automatisch auch in der Nachhaltigkeitswertung mit – zwei Chancen auf einen Preis.</p></div>
+  </div>
+  <div class="card"><h3>Deine Urkunde</h3><div class="row" style="margin-top:0"><label class="fld" style="max-width:320px"><span>Dein Name</span><span class="inp"><input id="certName" value="${(S.name||'').replace(/"/g,'&quot;')}" placeholder="Vor- und Nachname"><em></em></span></label><button class="btn dark" style="align-self:flex-end" onclick="window.print()">🖨 Urkunde drucken</button></div>
+   <div class="cert" id="cert"><div class="small" style="letter-spacing:2px;text-transform:uppercase">Urkunde</div><h2>Börsen-Fit</h2><p>Hiermit wird bestätigt, dass</p><div class="nm" id="certN">${S.name||'&nbsp;'}</div><p>das Lernportal zum Planspiel Börse erfolgreich abgeschlossen hat<br>und die Stufe <b>„${lv[0]}“</b> mit <b>${pc} %</b> erreicht hat.</p><p class="small">${new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</p></div></div>`;
+  $('#certName').oninput=e=>{S.name=e.target.value;$('#certN').innerHTML=S.name||'&nbsp;';save();};
+  if(pc>=65)confetti();}
+function confetti(){const c=['#d6261d','#ffc21a','#0e8a52','#1769b0','#7ab929'];for(let i=0;i<70;i++){const d=document.createElement('div');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=c[i%c.length];d.style.animationDuration=(2+Math.random()*2.5)+'s';d.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),5500);}}
+
+/* ===================== Init ===================== */
+load();
+orderbook();mini();buildTasks();
+initSim();buildForm();renderSim();
+renderTest();addPagers();updateHUD();go('start');
+$('#nextDay').onclick=nextDay;
+$('#simReset').onclick=()=>{initSim();buildForm();renderSim();toast('Übungsdepot zurückgesetzt');};
+$('#menuBtn').onclick=()=>$('#side').classList.toggle('open');
+$('#resetAll').onclick=()=>{if(confirm('Wirklich alle Punkte und Antworten löschen?')){try{localStorage.removeItem('boersenfit-v1');}catch(e){}location.reload();}};
+</script>
+</body>
+</html>
